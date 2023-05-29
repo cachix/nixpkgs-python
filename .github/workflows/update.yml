@@ -18,8 +18,12 @@ jobs:
     - name: Install Cachix
       uses: cachix/cachix-action@v12
       with:
-        name: pythonix
+        name: python
+        extraPullNames: devenv
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+    - name: Install devenv.sh
+      run: nix profile install github:cachix/devenv/latest
+      shell: sh
     - run: devenv shell ./update.py
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
