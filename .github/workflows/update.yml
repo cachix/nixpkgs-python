@@ -1,0 +1,46 @@
+name: Update Python versions
+
+on:
+  schedule:
+    - cron: "5 * * * *"
+permissions:
+  pull-requests: write
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+          ref: master
+    - name: Install Nix
+      uses: cachix/install-nix-action@v21
+    - name: Install Cachix
+      uses: cachix/cachix-action@v12
+      with:
+        name: pythonix
+        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+    - run: devenv shell ./update.py
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Create Pull Request
+      id: create-pull-request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.UPDATE_GITHUB_TOKEN }}
+        commit-message: Update Python versions
+        title: Update Python versions
+        body: |
+          Automatically created pull-request to update Python versions.
+          
+          This is the result of running:
+
+          ```
+          devenv shell ./update.py
+          ```
+        delete-branch: true
+    - if: ${{ steps.create-pull-request.outputs.pull-request-operation == 'created' }}
+      uses: peter-evans/enable-pull-request-automerge@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}

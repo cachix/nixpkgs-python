@@ -1,0 +1,45 @@
+name: "Build & Test"
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
+jobs:
+  generate-builds:
+    runs-on: ubuntu-latest
+    outputs:
+      builds: ${{ steps.generate-builds.outputs.builds }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v21
+    - uses: cachix/cachix-action@v12
+      with:
+        name: devenv
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - id: generate-builds
+      run: |
+        system=$(nix eval --raw --impure --expr 'builtins.currentSystem')
+        $flake=$(nix flake show --json --allow-import-from-derivation --no-update-lock-file)
+        json=$(jq ".checks.\"$system\" | keys | map(\"checks.$system.\" + .)")
+        echo "builds=$json" >> $GITHUB_OUTPUT
+  builds:
+    name: nix build '.#\"${{ matrix.build }}\"'
+    needs: [generate-builds]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [[ubuntu-latest], [macos-latest], [self-hosted, macOS]]
+        build: ${{ fromJSON(needs.generate-builds.outputs.builds) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v21
+    - uses: cachix/cachix-action@v12
+      with:
+        name: python
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix build ".#\"${{ matrix.build }}\""

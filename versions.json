@@ -1,0 +1,541 @@
+{
+    "releases": {
+        "3.11.1": {
+            "hash": "uu1RjiazN9TYEFZ5yvaMXDJjDXAmFPwXTpjLlcRr36Q=",
+            "url": "https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tgz"
+        },
+        "3.11.2": {
+            "hash": "JBHHS9pbvPzdr0Ux9m0a3HPyR/UprumBsClROu/b+Ek=",
+            "url": "https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz"
+        },
+        "3.11.3": {
+            "hash": "Gnnz3zImXZ5mJfGgsxwo6xWU35EUA9EfMyDuHaGz4Eg=",
+            "url": "https://www.python.org/ftp/python/3.11.3/Python-3.11.3.tgz"
+        },
+        "3.10.1": {
+            "hash": "t2EXZw58UGQ0S5wTjhQaN35oa5Bj86imIP9nT6jskNM=",
+            "url": "https://www.python.org/ftp/python/3.10.1/Python-3.10.1.tgz"
+        },
+        "3.10.2": {
+            "hash": "PA7eiTARMZ+bCla0SVOj1Sx6v5ZXwj+0vJztk7hunJc=",
+            "url": "https://www.python.org/ftp/python/3.10.2/Python-3.10.2.tgz"
+        },
+        "3.10.3": {
+            "hash": "WjsCm61wuioBnr/wimUGCoubVC/8GoPGl/FEnsypgTs=",
+            "url": "https://www.python.org/ftp/python/3.10.3/Python-3.10.3.tgz"
+        },
+        "3.10.4": {
+            "hash": "87zGWx1fHceGdcdGyY/O6CPAOBaPxinFk1sETQkRrSg=",
+            "url": "https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz"
+        },
+        "3.10.5": {
+            "hash": "GPVxgqLeOwvnbfw5/c/SgVa7bdI+Xwhpb3SS6ePQvy0=",
+            "url": "https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tgz"
+        },
+        "3.10.6": {
+            "hash": "hIywalyqhdpcRb16kiG7gh4z/CvcugiMEnxY+tROY0M=",
+            "url": "https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tgz"
+        },
+        "3.10.7": {
+            "hash": "Gy5OLfaXxS02cxZml55ki+7aWUHQ+VdAqvv0Fj5cwSY=",
+            "url": "https://www.python.org/ftp/python/3.10.7/Python-3.10.7.tgz"
+        },
+        "3.10.8": {
+            "hash": "9ADD+zlLi+8SkvbcEpLF+tw1MwOaW8DD6IXz4Wc4Apo=",
+            "url": "https://www.python.org/ftp/python/3.10.8/Python-3.10.8.tgz"
+        },
+        "3.10.9": {
+            "hash": "TM1+RsiJj0x4YpEKFwOqDmNSWROlGauy9V4mIgqRTYg=",
+            "url": "https://www.python.org/ftp/python/3.10.9/Python-3.10.9.tgz"
+        },
+        "3.10.10": {
+            "hash": "+6ZFWd3iHr3JU+RWXnMVc7thFZ3o5NTO3ucPsRlvYQ0=",
+            "url": "https://www.python.org/ftp/python/3.10.10/Python-3.10.10.tgz"
+        },
+        "3.10.11": {
+            "hash": "89sxtmjvqYNQi9Z7VxKJiqQkeJmjRvLrdFc0aZzNOFk=",
+            "url": "https://www.python.org/ftp/python/3.10.11/Python-3.10.11.tgz"
+        },
+        "3.9.1": {
+            "hash": "KcuRugODRtoL2auEoKVahF2HLDQaTaaHn0YulMdB8Rc=",
+            "url": "https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz"
+        },
+        "3.9.2": {
+            "hash": "eJnopveUZ0iDDWZzny2PKzAhTa2Vbla5uiFrPeVYFRk=",
+            "url": "https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz"
+        },
+        "3.9.3": {
+            "hash": "Ov62GkW1oubxwPYhvYz5JaT/QGCZ/bPYyXuZOl9D0Eg=",
+            "url": "https://www.python.org/ftp/python/3.9.3/Python-3.9.3.tgz"
+        },
+        "3.9.4": {
+            "hash": "ZsTeFtqnSoJc+dqd2uH+Agtyw4VLc7F2IBHMM/nkWS8=",
+            "url": "https://www.python.org/ftp/python/3.9.4/Python-3.9.4.tgz"
+        },
+        "3.9.5": {
+            "hash": "4PvVtuHuJCUkQw3uPJG69Mu6ukpy3RZ0uQ/ah7cTx6s=",
+            "url": "https://www.python.org/ftp/python/3.9.5/Python-3.9.5.tgz"
+        },
+        "3.9.6": {
+            "hash": "0KNRguGeQW/I6uJaPc1NAtSZczPkrR8u7mAQqtw/6GY=",
+            "url": "https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz"
+        },
+        "3.9.7": {
+            "hash": "qDjT+TYNFXBAFCtxXbNPAhjlNTM2lqVWncb4VGBOudE=",
+            "url": "https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz"
+        },
+        "3.9.8": {
+            "hash": "dEf7i7JwlC1iDdJPqngUsTg7YfqZApokACX9gcHbgoM=",
+            "url": "https://www.python.org/ftp/python/3.9.8/Python-3.9.8.tgz"
+        },
+        "3.9.9": {
+            "hash": "LMe2fB8/ZsVxrMQkec32kdjta0e+4SybaEMEE6F6ROo=",
+            "url": "https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz"
+        },
+        "3.9.10": {
+            "hash": "GqnAcC7bro9qLJX3CknahCCqp2t4idNBnBhr/IwOVx4=",
+            "url": "https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz"
+        },
+        "3.9.11": {
+            "hash": "NEJAAHL1gqwvDfMIlVWPCIg7QWyMeHfqVdQNANipMRI=",
+            "url": "https://www.python.org/ftp/python/3.9.11/Python-3.9.11.tgz"
+        },
+        "3.9.12": {
+            "hash": "cOCEYuvyZQEr0r6Ipj0hSdiAxz5T8XEre7vpN1BWCug=",
+            "url": "https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz"
+        },
+        "3.9.13": {
+            "hash": "gpsNJgcqRGiaawgQ9bSjkz7ioLikv8mdfFiT/9T5fEQ=",
+            "url": "https://www.python.org/ftp/python/3.9.13/Python-3.9.13.tgz"
+        },
+        "3.9.14": {
+            "hash": "kgGDbiwWNhsrdAhoBQI5NzfUTyJzM/4uVynH1fYEFnU=",
+            "url": "https://www.python.org/ftp/python/3.9.14/Python-3.9.14.tgz"
+        },
+        "3.9.15": {
+            "hash": "SNHMsp1fuvH7j5EicdCfdFDkJtTf6Vl472qq2nDs5Ng=",
+            "url": "https://www.python.org/ftp/python/3.9.15/Python-3.9.15.tgz"
+        },
+        "3.9.16": {
+            "hash": "GtU56dvStC33FLaXJuBpO8a50tLI6RwuQyBAJmBRQMU=",
+            "url": "https://www.python.org/ftp/python/3.9.16/Python-3.9.16.tgz"
+        },
+        "3.8.1": {
+            "hash": "x8+jmkO5lGIbJF4Cl2npEmyqKpNXHO4udDshPM6sNfs=",
+            "url": "https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz"
+        },
+        "3.8.2": {
+            "hash": "5jSnp0d2wriVFrLgE92hcoyJyBSbmGO4zqIZRtr51WE=",
+            "url": "https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tgz"
+        },
+        "3.8.3": {
+            "hash": "avbU0uAQ+WVVGND8ZzjH/3Bp8QpNL71VUJ5Gfwkqi5A=",
+            "url": "https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz"
+        },
+        "3.8.4": {
+            "hash": "MsTZgX7xF5PaTQ2VsxkcTbgdLkVURhToRJJVyprjzBg=",
+            "url": "https://www.python.org/ftp/python/3.8.4/Python-3.8.4.tgz"
+        },
+        "3.8.5": {
+            "hash": "AVEVAjw4Lrarg9USdi/jxVAvoMbFL/68SDHE4aBv/Ek=",
+            "url": "https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz"
+        },
+        "3.8.6": {
+            "hash": "MTVi7pmG3Dac1ngBG9/ZgA72L797FJYiihj4azZCjCE=",
+            "url": "https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz"
+        },
+        "3.8.7": {
+            "hash": "IOWgQmLwry65wZJA1+w2jzhXiLui2N+6fnSyC6tNK6w=",
+            "url": "https://www.python.org/ftp/python/3.8.7/Python-3.8.7.tgz"
+        },
+        "3.8.8": {
+            "hash": "dsB2PwSOT5uGHSTadrfdXHo7p+wIb0DK7e6jWSYydvc=",
+            "url": "https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tgz"
+        },
+        "3.8.9": {
+            "hash": "l3nsHfAAv4aRTN1AhguI2lbB5h21nTd4S+yhSiWayek=",
+            "url": "https://www.python.org/ftp/python/3.8.9/Python-3.8.9.tgz"
+        },
+        "3.8.10": {
+            "hash": "s3rHTSy60lkOfNDdKzgmwpr+iac0CQqHv4wDxFBmy2U=",
+            "url": "https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgz"
+        },
+        "3.8.11": {
+            "hash": "t3Rk6oDOwUWBuGrrf7L/AoMOCrx7zcdSt7S9/Njz45M=",
+            "url": "https://www.python.org/ftp/python/3.8.11/Python-3.8.11.tgz"
+        },
+        "3.8.12": {
+            "hash": "MWqjPzt3B9BB5z8kbv7bKXpwiYxLkfEn9m3I2AxZbxo=",
+            "url": "https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz"
+        },
+        "3.8.13": {
+            "hash": "kDuS12NUNmsdnEQ00MgWQzRc74fBYArfo2CV17AO7eQ=",
+            "url": "https://www.python.org/ftp/python/3.8.13/Python-3.8.13.tgz"
+        },
+        "3.8.14": {
+            "hash": "QflZxIDFkhH+tV1aKIUaVsfiLQLvkQNWBuuyEBFyPDE=",
+            "url": "https://www.python.org/ftp/python/3.8.14/Python-3.8.14.tgz"
+        },
+        "3.8.15": {
+            "hash": "kk1GmZ34KqLqod5cpR1oAP+1a0v1JIaij0BjTjNiq8Q=",
+            "url": "https://www.python.org/ftp/python/3.8.15/Python-3.8.15.tgz"
+        },
+        "3.8.16": {
+            "hash": "ccqdk1Y37S/rWekKNoNh3JHspHKpCssdNEougXjMrxA=",
+            "url": "https://www.python.org/ftp/python/3.8.16/Python-3.8.16.tgz"
+        },
+        "3.7.1": {
+            "hash": "NsG4GsKdD4NB9yfvQIZNmdggaJe+lr5z3DTUc5ycnwY=",
+            "url": "https://www.python.org/ftp/python/3.7.1/Python-3.7.1.tgz"
+        },
+        "3.7.2": {
+            "hash": "8J2Dx3O5zHJCGruiwxfk5uBdkZ+bzzRGjhkramyOMo0=",
+            "url": "https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz"
+        },
+        "3.7.3": {
+            "hash": "1i4wFfL4nJcKxSNDl2tAZpSTF0L73i/tjRzo67Th+P8=",
+            "url": "https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz"
+        },
+        "3.7.4": {
+            "hash": "1j5j4U5tKeF0kKu+b30Xr7PbGC29gBIp8U5V9BV8S6M=",
+            "url": "https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz"
+        },
+        "3.7.5": {
+            "hash": "jsxoHqBgC7+zZvKxc/cnsgW7gl2T0vCyhrxOWNN2k9o=",
+            "url": "https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tgz"
+        },
+        "3.7.6": {
+            "hash": "ru5oHCNa0zavEW8Iq2VjNhoMgcU3BywbMJ1uQFCqIRQ=",
+            "url": "https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tgz"
+        },
+        "3.7.7": {
+            "hash": "jIvpHNJkihoMJR8E6gu0wqVXD+ucReqqIkHHhVhbR1o=",
+            "url": "https://www.python.org/ftp/python/3.7.7/Python-3.7.7.tgz"
+        },
+        "3.7.8": {
+            "hash": "DiWDVhTcIh4+zqWDGzj6kHiLU4m5m2dadRQUyFh4mrA=",
+            "url": "https://www.python.org/ftp/python/3.7.8/Python-3.7.8.tgz"
+        },
+        "3.7.9": {
+            "hash": "ObAYvH2KFl5ZqoJ9muRcRZAXObC7sTch5Plz81IcFmo=",
+            "url": "https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz"
+        },
+        "3.7.10": {
+            "hash": "yWSa2E3DpDTIY332ljEAsuVghpf5ulbYLjgJ5BSOCXU=",
+            "url": "https://www.python.org/ftp/python/3.7.10/Python-3.7.10.tgz"
+        },
+        "3.7.11": {
+            "hash": "tPujIYLhZIXQpgIrqDySUeahwUZ27CQ6mgfTcizUZho=",
+            "url": "https://www.python.org/ftp/python/3.7.11/Python-3.7.11.tgz"
+        },
+        "3.7.12": {
+            "hash": "M7Tar4Mb4ZIZZZRm0SZF+H7Oxush1Nn5cRAYp7ZszkY=",
+            "url": "https://www.python.org/ftp/python/3.7.12/Python-3.7.12.tgz"
+        },
+        "3.7.13": {
+            "hash": "5AVBf1CYS8WHDH56n5rrk+nScPWsZ/ZnoM06CUOWgrU=",
+            "url": "https://www.python.org/ftp/python/3.7.13/Python-3.7.13.tgz"
+        },
+        "3.7.14": {
+            "hash": "grKr+JeMqmGpAR0Wbu3oMbMt6cvrwNuBYpAPojQ3twk=",
+            "url": "https://www.python.org/ftp/python/3.7.14/Python-3.7.14.tgz"
+        },
+        "3.7.15": {
+            "hash": "zymTeYroQw8686ANltn98yBxn0BC8Dk4Dcp5lnwl5DY=",
+            "url": "https://www.python.org/ftp/python/3.7.15/Python-3.7.15.tgz"
+        },
+        "3.7.16": {
+            "hash": "DPLaB/pGRjZ1UhVBWQniLrHQWIF69IJLwVr4OQ0F+zg=",
+            "url": "https://www.python.org/ftp/python/3.7.16/Python-3.7.16.tgz"
+        },
+        "3.6.1": {
+            "hash": "qlCwFD33yJzpG+Ag/kE4JhOoFzVLM6zcZkG0T4ztOCg=",
+            "url": "https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz"
+        },
+        "3.6.2": {
+            "hash": "eRlIkxCl8X96y6tk1zHkbcoHAodIQNrc6L1LKzuOeoI=",
+            "url": "https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tgz"
+        },
+        "3.6.3": {
+            "hash": "q2GTrxkhsw9YezAv44UmhRDoAYfKg8qC0r/nq1RMb5E=",
+            "url": "https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz"
+        },
+        "3.6.4": {
+            "hash": "fcRT4ak8CDOI6xojolaGJAf4I0qW3E+uD8doICAidIY=",
+            "url": "https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz"
+        },
+        "3.6.5": {
+            "hash": "U6PhfXfNFcUjAZK2qMHgMcB82fNKLwiacxxva9ND1cY=",
+            "url": "https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz"
+        },
+        "3.6.6": {
+            "hash": "fVba32x9kqI4cCOJ6Az+Zvv65z5YQYntb4nHW78+2lg=",
+            "url": "https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz"
+        },
+        "3.6.7": {
+            "hash": "t8Nvftj3FDssRhU7czLbIidmn1g+oMznU/rPVJ0aQjk=",
+            "url": "https://www.python.org/ftp/python/3.6.7/Python-3.6.7.tgz"
+        },
+        "3.6.8": {
+            "hash": "f1sfCLOwpZU4fvbGTIWxsTs4q+8N2HGDXukjJi5PMvA=",
+            "url": "https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz"
+        },
+        "3.6.9": {
+            "hash": "R/ySody5RrntCrwxHTdntyFcVOZVsX/R0/m1OBlVJao=",
+            "url": "https://www.python.org/ftp/python/3.6.9/Python-3.6.9.tgz"
+        },
+        "3.6.10": {
+            "hash": "cDTdfLqY1PlMdPnt1zRbrHHIgUxBZyxk2QRPovlvM00=",
+            "url": "https://www.python.org/ftp/python/3.6.10/Python-3.6.10.tgz"
+        },
+        "3.6.11": {
+            "hash": "lmIZAviXRv/8IvOXScB9p8KReyMucjUuaDfUGFD3uQw=",
+            "url": "https://www.python.org/ftp/python/3.6.11/Python-3.6.11.tgz"
+        },
+        "3.6.12": {
+            "hash": "Et3b5SOFoPcC+4Bx4S3Mazyy3eB82Ns+1g6Q2Qq3hpM=",
+            "url": "https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tgz"
+        },
+        "3.6.13": {
+            "hash": "YUlQ09VPbnjaxlG0nGTP4s7v6lrzr/M3Gp5LJ6U7Jmk=",
+            "url": "https://www.python.org/ftp/python/3.6.13/Python-3.6.13.tgz"
+        },
+        "3.6.14": {
+            "hash": "cAZIl7xDTW6ui8w+VnjygrXqd21g5pXaVIoSGcz9J6U=",
+            "url": "https://www.python.org/ftp/python/3.6.14/Python-3.6.14.tgz"
+        },
+        "3.6.15": {
+            "hash": "VFcLfjOeLP1yspx+L9tHwLexi3QS5h3ltGP8CHwTsEM=",
+            "url": "https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz"
+        },
+        "3.5.1": {
+            "hash": "aH4GfZ85HaZFQjx+2oIFuunTXtwMdu9SGNy+TMdw0Nc=",
+            "url": "https://www.python.org/ftp/python/3.5.1/Python-3.5.1.tgz"
+        },
+        "3.5.2": {
+            "hash": "FSS4QOQs87kJ6PjfZ8FyQBLH3H+dB21P7vLT7/Ax6KA=",
+            "url": "https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz"
+        },
+        "3.5.3": {
+            "hash": "2IkLhNdzzXBZ5Zfb76UQNA3oM27JuekDK/Aw8ZKRVlo=",
+            "url": "https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tgz"
+        },
+        "3.5.4": {
+            "hash": "bth6i2x1jMMpmotDPoqakSIFStW8iq1DKZz/OlPYykQ=",
+            "url": "https://www.python.org/ftp/python/3.5.4/Python-3.5.4.tgz"
+        },
+        "3.5.5": {
+            "hash": "L5iNszkT3O8XVS/RRHtBr7idvCbjzfwGjqbGIBOjoqU=",
+            "url": "https://www.python.org/ftp/python/3.5.5/Python-3.5.5.tgz"
+        },
+        "3.5.6": {
+            "hash": "MNL/CTmI50KD4av+6CMpLGtZWQeWuYJ+lbpJQLJ9Jvg=",
+            "url": "https://www.python.org/ftp/python/3.5.6/Python-3.5.6.tgz"
+        },
+        "3.5.7": {
+            "hash": "VC2UkgoqBqRxpztRYUgFrWU2avmBRbA2m8N0zySLUhs=",
+            "url": "https://www.python.org/ftp/python/3.5.7/Python-3.5.7.tgz"
+        },
+        "3.5.8": {
+            "hash": "GMiN/SYBR7xyR+Y1YBDl1JFt+/xID2Q0kX+I5hIoF3o=",
+            "url": "https://www.python.org/ftp/python/3.5.8/Python-3.5.8.tgz"
+        },
+        "3.5.9": {
+            "hash": "Z6HU/G5FQNagksrcSI5TOvqWGzyb7MdNw9a1XLVuDME=",
+            "url": "https://www.python.org/ftp/python/3.5.9/Python-3.5.9.tgz"
+        },
+        "3.5.10": {
+            "hash": "NJag2vUZE3GKbxDj7aUfpDY0y2FRywlvMS1Ivb7/fTo=",
+            "url": "https://www.python.org/ftp/python/3.5.10/Python-3.5.10.tgz"
+        },
+        "3.4.1": {
+            "hash": "jQB+PvgLEoopK+EBIB513sVIDlYy6ZR3HnwjHRdyC2Y=",
+            "url": "https://www.python.org/ftp/python/3.4.1/Python-3.4.1.tgz"
+        },
+        "3.4.2": {
+            "hash": "RKPB7xx8o+T9JSQq+A7XLalBIDy07RqMG3JNkHiWXdg=",
+            "url": "https://www.python.org/ftp/python/3.4.2/Python-3.4.2.tgz"
+        },
+        "3.4.3": {
+            "hash": "i3Q/VunlC/CSO56cRd2SfAcdeqVs1GVp2IGK3YzwEUc=",
+            "url": "https://www.python.org/ftp/python/3.4.3/Python-3.4.3.tgz"
+        },
+        "3.4.4": {
+            "hash": "vJPpRAJYFuw2BxK0xC2NX3KertKyZYXpvIhE+T8MOC4=",
+            "url": "https://www.python.org/ftp/python/3.4.4/Python-3.4.4.tgz"
+        },
+        "3.4.5": {
+            "hash": "mXrKTdhpLzyVRlij2xHB0IYry/jq3WoWR0brM9MXwDQ=",
+            "url": "https://www.python.org/ftp/python/3.4.5/Python-3.4.5.tgz"
+        },
+        "3.4.6": {
+            "hash": "/lnaztmVSdHUUnJ8BQrkhhaelxaokM/7DUaLN22Ra0g=",
+            "url": "https://www.python.org/ftp/python/3.4.6/Python-3.4.6.tgz"
+        },
+        "3.4.7": {
+            "hash": "FhRzSEf9B+KhqxxlroQdskM/i4RfSbNLe1yryxw/SR8=",
+            "url": "https://www.python.org/ftp/python/3.4.7/Python-3.4.7.tgz"
+        },
+        "3.4.8": {
+            "hash": "ixoc4EPhMggtKaXQnyhB8ZPHe2MSgqgvmIlaXbq6Fjk=",
+            "url": "https://www.python.org/ftp/python/3.4.8/Python-3.4.8.tgz"
+        },
+        "3.4.9": {
+            "hash": "4C5WU3J1CmZ47+Nd3svlzNUzCooui7440wYHE0kuPas=",
+            "url": "https://www.python.org/ftp/python/3.4.9/Python-3.4.9.tgz"
+        },
+        "3.4.10": {
+            "hash": "IXdXaZJJq0MlcbOBOG1EHhK0MxAKtfkIBR/LfM7SU50=",
+            "url": "https://www.python.org/ftp/python/3.4.10/Python-3.4.10.tgz"
+        },
+        "3.3.1": {
+            "hash": "Zx3DYy8xHmPGczcDqgoa2QyZJ33cgpnTnkh3GKUDGb0=",
+            "url": "https://www.python.org/ftp/python/3.3.1/Python-3.3.1.tgz"
+        },
+        "3.3.2": {
+            "hash": "3mZPyjuOCrIPtCv+0aNuJvEW8YU+iK2hLbyTh2EDYXI=",
+            "url": "https://www.python.org/ftp/python/3.3.2/Python-3.3.2.tgz"
+        },
+        "3.3.3": {
+            "hash": "MLYIOb/grootuhHpCTKEWbuO5KJYr+dJSwayztoIDvw=",
+            "url": "https://www.python.org/ftp/python/3.3.3/Python-3.3.3.tgz"
+        },
+        "3.3.4": {
+            "hash": "6gVdud0ASm7NdpCryXNFc3Y2ht12gSIxa64t/QJkEq8=",
+            "url": "https://www.python.org/ftp/python/3.3.4/Python-3.3.4.tgz"
+        },
+        "3.3.5": {
+            "hash": "kWvFfdhSTcJ0Kb6657OdaUJ0LPlpm4dbK0lqPZYMcWg=",
+            "url": "https://www.python.org/ftp/python/3.3.5/Python-3.3.5.tgz"
+        },
+        "3.3.6": {
+            "hash": "ClitHx3vTsyQsYsMQQo6DhpIz3aSx10fg9CvCA5dIDQ=",
+            "url": "https://www.python.org/ftp/python/3.3.6/Python-3.3.6.tgz"
+        },
+        "3.3.7": {
+            "hash": "mSRhqVmOhaRTI1EtTmD6bB1arvCVa/nbmHM8xaqbBeE=",
+            "url": "https://www.python.org/ftp/python/3.3.7/Python-3.3.7.tgz"
+        },
+        "2.7.1": {
+            "hash": "yhPnsYYIIUlPcN4BcgIoOtc7H7e9iFhkAcVO+Vgibsg=",
+            "url": "https://www.python.org/ftp/python/2.7.1/Python-2.7.1.tgz"
+        },
+        "2.7.2": {
+            "hash": "HVS3CWwXkCw/QP/OfluE4ActAUQCQYT/8YSoTVY6u7M=",
+            "url": "https://www.python.org/ftp/python/2.7.2/Python-2.7.2.tgz"
+        },
+        "2.7.3": {
+            "hash": "1MIPK1+vlZmf1f7LP30yBxsIIFFiJKbStykyq0ehy44=",
+            "url": "https://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz"
+        },
+        "2.7.4": {
+            "hash": "mMXrnI5l7/zAEiESuhegvOiAqiPstWCvVrVetVYyuBo=",
+            "url": "https://www.python.org/ftp/python/2.7.4/Python-2.7.4.tgz"
+        },
+        "2.7.5": {
+            "hash": "jhtfqHuRg1r7N2qcDTGdQf7KB//rwCiNl6sI1k9Ir78=",
+            "url": "https://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz"
+        },
+        "2.7.6": {
+            "hash": "mcaGC3CXe++hWQAp+uCS3bGNsdaa5n6Lk4W2btEEulg=",
+            "url": "https://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz"
+        },
+        "2.7.7": {
+            "hash": "f0nApnBa2J2SUYHifQqqAl7kcxzg3mR3bHIiFsPmbEI=",
+            "url": "https://www.python.org/ftp/python/2.7.7/Python-2.7.7.tgz"
+        },
+        "2.7.8": {
+            "hash": "dNcLkU2kSHqh2XIisp6VVNBC+CXybLK5Or0g/dpWtVc=",
+            "url": "https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz"
+        },
+        "2.7.9": {
+            "hash": "yLujPmasMgHavcVW8Op8/mrBGUbsMtNXxMb5sBjBLFs=",
+            "url": "https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tgz"
+        },
+        "2.7.10": {
+            "hash": "7ajObuwD50mRq7U4QXDnxl/NdSLkCbjoPX5jcq3Q8So=",
+            "url": "https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz"
+        },
+        "2.7.11": {
+            "hash": "gpKblv1q/I2oOLFJEHB4wC+hdEt+YJmai6u8DT+ob8Y=",
+            "url": "https://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz"
+        },
+        "2.7.12": {
+            "hash": "PLUi0XRj36aaFVqxjP+jmbNYyWbANj1si1s78ThNpLY=",
+            "url": "https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tgz"
+        },
+        "2.7.13": {
+            "hash": "pPBaByDOD9kmJvAni2tDPu6aYXPd8rzteVfftZml7OE=",
+            "url": "https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz"
+        },
+        "2.7.14": {
+            "hash": "MEybIC6m+9CkqOCtNzNxX71HSfIgSpFzpY7FPDLqc+g=",
+            "url": "https://www.python.org/ftp/python/2.7.14/Python-2.7.14.tgz"
+        },
+        "2.7.15": {
+            "hash": "GGF9HxWjgKkZ1RdjCpzYXOF+pgL5u9xY3cZy30sCOds=",
+            "url": "https://www.python.org/ftp/python/2.7.15/Python-2.7.15.tgz"
+        },
+        "2.7.16": {
+            "hash": "AdqBOjYAh28D9G2xHMXECBdemfA68rqULvMkOJqDutU=",
+            "url": "https://www.python.org/ftp/python/2.7.16/Python-2.7.16.tgz"
+        },
+        "2.7.17": {
+            "hash": "8iBZ0JzfliXgpyhNJKEwYgRPW/Wdk6fzOCGQ36lM7N4=",
+            "url": "https://www.python.org/ftp/python/2.7.17/Python-2.7.17.tgz"
+        },
+        "2.7.18": {
+            "hash": "2jCA47SI9kij16RWDd7olShMM4CxHW3nXtuYZSa5qBQ=",
+            "url": "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
+        },
+        "2.6.1": {
+            "hash": "+2XpNnjhMn4+hVnMVuHgDtjAcWKyEoejUCZ3iSxcUVw=",
+            "url": "https://www.python.org/ftp/python/2.6.1/Python-2.6.1.tgz"
+        },
+        "2.6.2": {
+            "hash": "437N8knySPT+oietvKCcd4Zwtk/LXkWUfsPgk8vBLIY=",
+            "url": "https://www.python.org/ftp/python/2.6.2/Python-2.6.2.tgz"
+        },
+        "2.6.3": {
+            "hash": "pxtVVAaQQl/YKrAIGa65LBsjy7RzCgzNLiXIM7IqgS4=",
+            "url": "https://www.python.org/ftp/python/2.6.3/Python-2.6.3.tgz"
+        },
+        "2.6.4": {
+            "hash": "GiWkdQbkFlcEz+KwfAoGSwtXYqLRi4+9rVr2iK6s0lI=",
+            "url": "https://www.python.org/ftp/python/2.6.4/Python-2.6.4.tgz"
+        },
+        "2.6.5": {
+            "hash": "szHa/c4zYYNP7ng3ldT2iufPfTeekTfC2OhTHOphXt4=",
+            "url": "https://www.python.org/ftp/python/2.6.5/Python-2.6.5.tgz"
+        },
+        "2.6.6": {
+            "hash": "Ny9m20bXcyFORhnfF5SiZEkVj2JhONTSFBpkwvAX+uE=",
+            "url": "https://www.python.org/ftp/python/2.6.6/Python-2.6.6.tgz"
+        },
+        "2.6.7": {
+            "hash": "qAk+rOTP0+BrBfDetddl48bOxlkIBIZAqMrdepSLOCY=",
+            "url": "https://www.python.org/ftp/python/2.6.7/Python-2.6.7.tgz"
+        },
+        "2.6.8": {
+            "hash": "W/Aqdf+i/KpaPKu4IBmYUZsEVUGXViIxaIjqRo2VEvc=",
+            "url": "https://www.python.org/ftp/python/2.6.8/Python-2.6.8.tgz"
+        },
+        "2.6.9": {
+            "hash": "cnexKF2KgvN07266rIWwAyZveTmz8qJKOvUvlSOslNs=",
+            "url": "https://www.python.org/ftp/python/2.6.9/Python-2.6.9.tgz"
+        }
+    },
+    "latest": {
+        "3.11": "3.11.3",
+        "3.10": "3.10.11",
+        "3.9": "3.9.16",
+        "3.8": "3.8.16",
+        "3.7": "3.7.16",
+        "3.6": "3.6.15",
+        "3.5": "3.5.10",
+        "3.4": "3.4.10",
+        "3.3": "3.3.7",
+        "2.7": "2.7.18",
+        "2.6": "2.6.9"
+    }
+}
