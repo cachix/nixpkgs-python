@@ -26,7 +26,6 @@ jobs:
       id: create-pull-request
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.UPDATE_GITHUB_TOKEN }}
         commit-message: Update Python versions
         title: Update Python versions
         body: |
@@ -41,5 +40,4 @@ jobs:
     - if: ${{ steps.create-pull-request.outputs.pull-request-operation == 'created' }}
       uses: peter-evans/enable-pull-request-automerge@v3
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
         pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
