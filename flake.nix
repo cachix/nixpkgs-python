@@ -19,26 +19,9 @@
       versionInBetween = version: lower: upper:
         lib.versionOlder version lower && lib.versionAtLeast version upper;
     in {
-    lib.overrides = [
-      { condition = version: versionInBetween version "3.8.7" "3.8";
-        override = pkg: pkg.override {
-          noldconfigPatch = ./patches/3.8.6-no-ldconfig.patch;
-        };
-      }
-      { condition = version: versionInBetween version "3.7.10" "3.7";
-        override = pkg: pkg.override {
-          noldconfigPatch = ./patches/3.7.9-no-ldconfig.patch;
-        };
-      }
-      { condition = version: lib.versionOlder version "3.3.100";
-        override = pkg: pkg.override {
-          noldconfigPatch = null;
-        };
-      }
-    ];
-    lib.applyOverrides = pkg:
+    lib.applyOverrides = overrides: pkg:
       let
-        matching = builtins.filter ({ condition, ... }: condition pkg.version) self.lib.overrides;
+        matching = builtins.filter ({ condition, ... }: condition pkg.version) overrides;
         apply = pkg: { override, ... }: override pkg;
       in lib.foldl apply pkg matching;
     lib.mkPython =
@@ -56,7 +39,46 @@
             suffix = "";
           };
           infix = if sourceVersion.major == "2" then "2.7/" else "";
-        in self.lib.applyOverrides (pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" { 
+          overrides = [
+          { condition = version: versionInBetween version "3.8.7" "3.8";
+            override = pkg: pkg.override {
+              noldconfigPatch = ./patches/3.8.6-no-ldconfig.patch;
+            };
+          }
+          { condition = version: versionInBetween version "3.7.10" "3.7";
+            override = pkg: pkg.override {
+              noldconfigPatch = ./patches/3.7.9-no-ldconfig.patch;
+            };
+          }
+          { condition = version: versionInBetween version "3.7.3" "3.7";
+            override = pkg: pkg.overrideAttrs (old: {
+              patches = lib.filter (elem: !lib.hasSuffix "fix-finding-headers-when-cross-compiling.patch" elem) old.patches;
+            });
+          }
+          { condition = version: versionInBetween version "3.5.3" "3.5";
+            override = pkg: pkg.override {
+              # no existing patch available
+              noldconfigPatch = null;
+            };
+          }
+          { condition = version: versionInBetween version "3.4" "3.0";
+            override = pkg: (pkg.override {
+              # no existing patch available
+              noldconfigPatch = null;
+              # otherwise it segfaults
+              stdenv = pkgs.overrideCC pkgs.stdenv pkgs.gcc8;
+            });
+          }
+          { condition = version: versionInBetween version "3.4.11" "3.0";
+            override = pkg: pkg.overrideAttrs (old: {
+              # fill in the missing pc file
+              postInstall = '' 
+                ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
+              ''+ old.postInstall;
+            });
+          }
+        ];
+        in self.lib.applyOverrides overrides (pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" { 
           inherit sourceVersion url;
           inherit (pkgs.darwin) configd;
           passthruFun = pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
