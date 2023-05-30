@@ -69,7 +69,7 @@
               stdenv = pkgs.overrideCC pkgs.stdenv pkgs.gcc8;
             });
           }
-          { condition = version: versionInBetween version "3.4.11" "3.0";
+          { condition = version: versionInBetween version "3.5.2" "3.0";
             override = pkg: pkg.overrideAttrs (old: {
               # fill in the missing pc file
               postInstall = '' 
