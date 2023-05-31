@@ -52,7 +52,7 @@
           }
           { condition = version: versionInBetween version "3.7.3" "3.7";
             override = pkg: pkg.overrideAttrs (old: {
-              patches = lib.filter (elem: !lib.hasSuffix "fix-finding-headers-when-cross-compiling.patch" elem) old.patches;
+              patches = lib.filter (elem: if builtins.isNull elem then true else !lib.hasSuffix "fix-finding-headers-when-cross-compiling.patch" elem) old.patches;
             });
           }
           { condition = version: versionInBetween version "3.5.3" "3.5";
@@ -61,15 +61,45 @@
               noldconfigPatch = null;
             };
           }
+          { condition = version: versionInBetween version "3.6.8" "3.4";
+            override = pkg: pkg.overrideAttrs (old: {
+              patches = (lib.filter (elem: if builtins.isNull elem then true else  !lib.hasSuffix "python-3.x-distutils-C++.patch" elem) old.patches)
+                 ++ [ (pkgs.fetchpatch {
+                        url = "https://bugs.python.org/file47046/python-3.x-distutils-C++.patch";
+                        sha256 = "0dgdn9k2kmw4wh90vdnjcrnn97ylxgx7mbn9l87fwz6j501jqvk8";
+                        extraPrefix = "";
+                    })];
+            });
+          }
+          # no C++ patch for 3.3
+          { condition = version: versionInBetween version "3.4" "3.0";
+            override = pkg: pkg.overrideAttrs (old: {
+              patches = (lib.filter (elem: if builtins.isNull elem then true else  !lib.hasSuffix "python-3.x-distutils-C++.patch" elem) old.patches);
+            });
+          }
+          # fix darwin compilation
+          { condition = version: versionInBetween version "3.8.4" "3.8" || versionInBetween version "3.7.8" "3.7";
+            override = pkg: pkg.overrideAttrs (old: {
+              # no existing patch available
+              patches = old.patches ++ [(pkgs.fetchpatch {
+                url = "https://github.com/python/cpython/commit/8ea6353.patch";
+                sha256 = "xXRDwtMMhb66J4Lis0rtTNxARgPqLAqR2y3YtkJOt2g=";
+              })];
+            });
+
+          }
           { condition = version: versionInBetween version "3.4" "3.0";
             override = pkg: (pkg.override {
               # no existing patch available
               noldconfigPatch = null;
               # otherwise it segfaults
-              stdenv = pkgs.overrideCC pkgs.stdenv pkgs.gcc8;
+              stdenv = 
+                if pkgs.stdenv.isLinux
+                then pkgs.overrideCC pkgs.stdenv pkgs.gcc8
+                else pkgs.stdenv;
             });
           }
-          { condition = version: versionInBetween version "3.5.2" "3.0";
+          { condition = version: versionInBetween version "3.5.2" "3.0" && pkgs.stdenv.isLinux;
             override = pkg: pkg.overrideAttrs (old: {
               # fill in the missing pc file
               postInstall = '' 
