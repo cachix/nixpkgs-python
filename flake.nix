@@ -80,7 +80,6 @@
           # fix darwin compilation
           { condition = version: versionInBetween version "3.8.4" "3.8" || versionInBetween version "3.7.8" "3.7";
             override = pkg: pkg.overrideAttrs (old: {
-              # no existing patch available
               patches = old.patches ++ [(pkgs.fetchpatch {
                 url = "https://github.com/python/cpython/commit/8ea6353.patch";
                 sha256 = "xXRDwtMMhb66J4Lis0rtTNxARgPqLAqR2y3YtkJOt2g=";
@@ -108,12 +107,21 @@
             });
           }
         ];
-        in self.lib.applyOverrides overrides (pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" { 
-          inherit sourceVersion url;
+        in (self.lib.applyOverrides overrides (pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" ({ 
+          inherit sourceVersion;
           inherit (pkgs.darwin) configd;
+          hash = null;
           passthruFun = pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
-          hash = "sha256-${hash}";
+        } // lib.optionalAttrs (sourceVersion.major == "3") {
           noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
+        }))).overrideAttrs (old: {
+          src = pkgs.fetchurl {
+            inherit url;
+            sha256 = hash;
+          };
+          meta = old.meta // {
+            knownVulnerabilities = [];
+          };
         });
 
     lib.versions = builtins.fromJSON (builtins.readFile ./versions.json);
