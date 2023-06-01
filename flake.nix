@@ -48,10 +48,6 @@
           filterOutPatch = name: pkg: replacePatch name null pkg;
           overrides = [
             # py2
-            { condition = version: versionInBetween version "2.6.6" "2.6";
-              # patch not available
-              override = filterOutPatch "nix-store-mtime.patch";
-            }
             { condition = version: versionInBetween version "2.7.3" "2.6";
               # patch not available
               override = pkg: filterOutPatch "deterministic-build.patch" (filterOutPatch "no-win64-workaround.patch" pkg);
@@ -60,7 +56,7 @@
               # patch not available
               override = filterOutPatch "atomic_pyc.patch";
             }
-            { condition = version: versionInBetween version "2.7.12" "2.6";
+            { condition = version: versionInBetween version "2.7.13" "2.6";
               override = pkg: filterOutPatch "find_library-gcc10.patch" (filterOutPatch "profile-task.patch" pkg);
             }
             # patch not available before 2.7.11
@@ -87,7 +83,7 @@
               # no existing patch available
               override = overrideLDConfigPatch null;
             }
-            { condition = version: versionInBetween version "3.6.8" "3.4";
+            { condition = version: versionInBetween version "3.6.6" "3.4";
               override = replacePatch "python-3.x-distutils-C++.patch" (pkgs.fetchpatch {
                 url = "https://bugs.python.org/file47046/python-3.x-distutils-C++.patch";
                 sha256 = "0dgdn9k2kmw4wh90vdnjcrnn97ylxgx7mbn9l87fwz6j501jqvk8";

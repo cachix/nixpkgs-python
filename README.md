@@ -6,9 +6,8 @@ All Python versions, kept up-to-date on hourly basis using Nix.
 
 This project supports the following Python versions:
 
-- 2.6
-- 2.7
-- 3.3+ (up to the latest version)
+- 2.7.2+
+- 3.3.1+ (up to the latest release)
 
 ## Cachix (optional)
 
@@ -37,7 +36,8 @@ Create `devenv.nix`:
 
 {
   languages.python.enable = true;
-  languages.python.version = "3.11.3";
+  languages.python.version = "3.11";
+  # languages.python.version = "3.11.3";
 }
 ```
 

@@ -416,14 +416,6 @@
             "hash": "mSRhqVmOhaRTI1EtTmD6bB1arvCVa/nbmHM8xaqbBeE=",
             "url": "https://www.python.org/ftp/python/3.3.7/Python-3.3.7.tgz"
         },
-        "2.7.1": {
-            "hash": "yhPnsYYIIUlPcN4BcgIoOtc7H7e9iFhkAcVO+Vgibsg=",
-            "url": "https://www.python.org/ftp/python/2.7.1/Python-2.7.1.tgz"
-        },
-        "2.7.2": {
-            "hash": "HVS3CWwXkCw/QP/OfluE4ActAUQCQYT/8YSoTVY6u7M=",
-            "url": "https://www.python.org/ftp/python/2.7.2/Python-2.7.2.tgz"
-        },
         "2.7.3": {
             "hash": "1MIPK1+vlZmf1f7LP30yBxsIIFFiJKbStykyq0ehy44=",
             "url": "https://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz"
@@ -487,42 +479,6 @@
         "2.7.18": {
             "hash": "2jCA47SI9kij16RWDd7olShMM4CxHW3nXtuYZSa5qBQ=",
             "url": "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
-        },
-        "2.6.1": {
-            "hash": "+2XpNnjhMn4+hVnMVuHgDtjAcWKyEoejUCZ3iSxcUVw=",
-            "url": "https://www.python.org/ftp/python/2.6.1/Python-2.6.1.tgz"
-        },
-        "2.6.2": {
-            "hash": "437N8knySPT+oietvKCcd4Zwtk/LXkWUfsPgk8vBLIY=",
-            "url": "https://www.python.org/ftp/python/2.6.2/Python-2.6.2.tgz"
-        },
-        "2.6.3": {
-            "hash": "pxtVVAaQQl/YKrAIGa65LBsjy7RzCgzNLiXIM7IqgS4=",
-            "url": "https://www.python.org/ftp/python/2.6.3/Python-2.6.3.tgz"
-        },
-        "2.6.4": {
-            "hash": "GiWkdQbkFlcEz+KwfAoGSwtXYqLRi4+9rVr2iK6s0lI=",
-            "url": "https://www.python.org/ftp/python/2.6.4/Python-2.6.4.tgz"
-        },
-        "2.6.5": {
-            "hash": "szHa/c4zYYNP7ng3ldT2iufPfTeekTfC2OhTHOphXt4=",
-            "url": "https://www.python.org/ftp/python/2.6.5/Python-2.6.5.tgz"
-        },
-        "2.6.6": {
-            "hash": "Ny9m20bXcyFORhnfF5SiZEkVj2JhONTSFBpkwvAX+uE=",
-            "url": "https://www.python.org/ftp/python/2.6.6/Python-2.6.6.tgz"
-        },
-        "2.6.7": {
-            "hash": "qAk+rOTP0+BrBfDetddl48bOxlkIBIZAqMrdepSLOCY=",
-            "url": "https://www.python.org/ftp/python/2.6.7/Python-2.6.7.tgz"
-        },
-        "2.6.8": {
-            "hash": "W/Aqdf+i/KpaPKu4IBmYUZsEVUGXViIxaIjqRo2VEvc=",
-            "url": "https://www.python.org/ftp/python/2.6.8/Python-2.6.8.tgz"
-        },
-        "2.6.9": {
-            "hash": "cnexKF2KgvN07266rIWwAyZveTmz8qJKOvUvlSOslNs=",
-            "url": "https://www.python.org/ftp/python/2.6.9/Python-2.6.9.tgz"
         }
     },
     "latest": {
@@ -535,7 +491,6 @@
         "3.5": "3.5.10",
         "3.4": "3.4.10",
         "3.3": "3.3.7",
-        "2.7": "2.7.18",
-        "2.6": "2.6.9"
+        "2.7": "2.7.18"
     }
 }
