@@ -7,8 +7,8 @@
   };
 
   nixConfig = {
-    substituters = "https://cache.nixos.org"; # https://python.cachix.org";
-    extra-trusted-public-keys = "python.cachix.org-1:66x3z4afDDpQOUXdGcmFXwj3xJwQyRevOx0EdwR076Y=";
+    substituters = "https://cache.nixos.org https://nixpkgs-python.cachix.org";
+    extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }: 
