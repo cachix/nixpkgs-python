@@ -69,6 +69,9 @@
             { condition = version: versionInBetween version "2.7.13" "2.7.12";
               override = replacePatch "no-ldconfig.patch" ./patches/2.7.11-no-ldconfig.patch;
             }
+            { condition = version: versionInBetween version "2.7.17" "2.7";
+              override = replacePatch "python-2.7-distutils-C++.patch" ./patches/2.7.17-distutils-C++.patch;
+            }
             # py3
             { condition = version: versionInBetween version "3.8.7" "3.8";
               override = overrideLDConfigPatch ./patches/3.8.6-no-ldconfig.patch;
