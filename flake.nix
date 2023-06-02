@@ -82,6 +82,22 @@
             { condition = version: versionInBetween version "3.7.3" "3.7";
               override = filterOutPatch "fix-finding-headers-when-cross-compiling.patch";
             }
+            { condition = version: versionInBetween version "3.7.3" "3.7.1";
+              override = replacePatch "python-3.x-distutils-C++.patch" (pkgs.fetchpatch {
+                url = "https://bugs.python.org/file48016/python-3.x-distutils-C++.patch";
+                sha256 = "1h18lnpx539h5lfxyk379dxwr8m2raigcjixkf133l4xy3f4bzi2";
+              });
+            } 
+            { condition = version: versionInBetween version "3.7.4" "3.7.3";
+              override = replacePatch "python-3.x-distutils-C++.patch" ./patches/python-3.7.3-distutils-C++.patch;
+            }
+            {
+              condition = version: versionInBetween version "3.7.2" "3.7" || versionInBetween version "3.6.8" "3.6.6";
+              override = replacePatch "python-3.x-distutils-C++.patch" (pkgs.fetchpatch {
+                url = "https://bugs.python.org/file47669/python-3.8-distutils-C++.patch";
+                sha256 = "0s801d7ww9yrk6ys053jvdhl0wicbznx08idy36f1nrrxsghb3ii";
+              });
+            }
             { condition = version: versionInBetween version "3.5.3" "3.5";
               # no existing patch available
               override = overrideLDConfigPatch null;
