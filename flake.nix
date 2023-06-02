@@ -29,6 +29,7 @@
         , version
         , hash
         , url
+        , callPackage
         }:
         let
           versionList = builtins.splitVersion version;
@@ -146,6 +147,7 @@
           inherit sourceVersion;
           inherit (pkgs.darwin) configd;
           hash = null;
+          self = callPackage ./foo.nix { inherit version; };
           passthruFun = pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
         } // lib.optionalAttrs (sourceVersion.major == "3") {
           noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
@@ -163,15 +165,17 @@
 
     checks = forAllSystems (system:
       let
+        callPackage = lib.callPackageWith (pkgs // { nixpkgs-python = packages; });
         pkgs = nixpkgs.legacyPackages.${system};
-        getRelease = version: source: self.lib.mkPython { 
-          inherit pkgs version; 
+        getRelease = callPackage: version: source: self.lib.mkPython { 
+          inherit pkgs version callPackage; 
           inherit (source) hash url;
         };
-        getLatest = version: latest:
-          getRelease latest self.lib.versions.releases.${latest};
-      in pkgs.lib.mapAttrs getRelease self.lib.versions.releases 
-      // pkgs.lib.mapAttrs getLatest self.lib.versions.latest
+        getLatest = callPackage: version: latest:
+          getRelease callPackage latest self.lib.versions.releases.${latest};
+        packages = pkgs.lib.mapAttrs (getRelease callPackage) self.lib.versions.releases 
+          // pkgs.lib.mapAttrs (getLatest callPackage) self.lib.versions.latest;
+      in packages
     );
 
     packages = self.checks;
