@@ -23,10 +23,12 @@ def get_all_releases(response, versions):
         latest_version = entry['latest']
         latest_version_split = latest_version.split('.')
         latest_patch = int(latest_version_split[-1])
-        versions['latest'][cycle] = latest_version
 
         if cycle == "2.6":
             continue
+
+        versions['latest'][cycle] = latest_version
+
         
         for i in range(1, latest_patch + 1):
             version = f"{cycle}.{i}"
