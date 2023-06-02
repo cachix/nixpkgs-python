@@ -114,7 +114,7 @@
               override = filterOutPatch "python-3.x-distutils-C++.patch";
             }
             # fix darwin compilation
-            { condition = version: versionInBetween version "3.8.4" "3.8" || versionInBetween version "3.7.8" "3.5";
+            { condition = version: versionInBetween version "3.8.4" "3.8" || versionInBetween version "3.7.8" "3.0";
               override = pkg: pkg.overrideAttrs (old: {
                 patches = old.patches ++ [(pkgs.fetchpatch {
                   url = "https://github.com/python/cpython/commit/8ea6353.patch";
