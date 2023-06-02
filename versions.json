@@ -416,18 +416,6 @@
             "hash": "mSRhqVmOhaRTI1EtTmD6bB1arvCVa/nbmHM8xaqbBeE=",
             "url": "https://www.python.org/ftp/python/3.3.7/Python-3.3.7.tgz"
         },
-        "2.7.3": {
-            "hash": "1MIPK1+vlZmf1f7LP30yBxsIIFFiJKbStykyq0ehy44=",
-            "url": "https://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz"
-        },
-        "2.7.4": {
-            "hash": "mMXrnI5l7/zAEiESuhegvOiAqiPstWCvVrVetVYyuBo=",
-            "url": "https://www.python.org/ftp/python/2.7.4/Python-2.7.4.tgz"
-        },
-        "2.7.5": {
-            "hash": "jhtfqHuRg1r7N2qcDTGdQf7KB//rwCiNl6sI1k9Ir78=",
-            "url": "https://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz"
-        },
         "2.7.6": {
             "hash": "mcaGC3CXe++hWQAp+uCS3bGNsdaa5n6Lk4W2btEEulg=",
             "url": "https://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz"
