@@ -147,7 +147,7 @@
           inherit sourceVersion;
           inherit (pkgs.darwin) configd;
           hash = null;
-          self = callPackage ./foo.nix { inherit version; };
+          self = callPackage ./self.nix { inherit version; };
           passthruFun = pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
         } // lib.optionalAttrs (sourceVersion.major == "3") {
           noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
