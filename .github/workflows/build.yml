@@ -21,4 +21,4 @@ jobs:
       with:
         name: nixpkgs-python
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix flake check --keep-going --accept-flake-config --show-trace
+    - run: nix flake check -L --keep-going --accept-flake-config --show-trace
