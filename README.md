@@ -15,6 +15,13 @@ If you'd like to avoid compilation [install Cachix](https://docs.cachix.org/inst
 
     $ cachix use nixpkgs-python
 
+Using the following platforms:
+
+- x86_64-darwin
+- x86_64-linux
+- aarch64-linux
+- aarch64-darwin
+
 ## Usage
 
 ### ad-hoc
