@@ -48,7 +48,15 @@ Create `devenv.nix`:
 }
 ```
 
-And run:
+Create `devenv.yaml`:
+
+```yaml
+inputs:
+  nixpkgs-python:
+    url: github:cachix/nixpkgs-python
+```
+
+Then run:
 
     $ devenv shell
     ...
