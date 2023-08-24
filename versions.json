@@ -487,11 +487,19 @@
         "3.11.4": {
             "hash": "hcN6Jl5cndn3WzX5VOMfv8EDgxYkFyheMK0lzAc6DWM=",
             "url": "https://www.python.org/ftp/python/3.11.4/Python-3.11.4.tgz"
+        },
+        "3.11.5": {
+            "hash": "oSoKATowuEbHhsAQ8sGd02tymNiI98S9FYHZDOGLXlg=",
+            "url": "https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tgz"
+        },
+        "3.10.13": {
+            "hash": "aY7FUjTBNjvYE7Rg7VOw8QiHfHoTPUi96aUKHrV7fmU=",
+            "url": "https://www.python.org/ftp/python/3.10.13/Python-3.10.13.tgz"
         }
     },
     "latest": {
-        "3.11": "3.11.4",
-        "3.10": "3.10.12",
+        "3.11": "3.11.5",
+        "3.10": "3.10.13",
         "3.9": "3.9.17",
         "3.8": "3.8.17",
         "3.7": "3.7.17",
