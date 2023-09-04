@@ -14,7 +14,7 @@ jobs:
       with:
           ref: main
     - name: Install Nix
-      uses: cachix/install-nix-action@v22
+      uses: cachix/install-nix-action@6a9a9e84a173d90b3ffb42c5ddaf9ea033fad011 # v23
       with:
         install_url: https://nixos-nix-install-tests.cachix.org/serve/r1x1gcvnw0hc9cv531z86pa5lfn8s9jn/install 
         install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
