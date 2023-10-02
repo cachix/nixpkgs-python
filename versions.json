@@ -503,10 +503,14 @@
         "3.8.18": {
             "hash": "fF32i6sb6BpS3qDMLicF6gBVO2cQejARiDg9e1cyCxY=",
             "url": "https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tgz"
+        },
+        "3.11.6": {
+            "hash": "wEm/MX6HfL+fzow6+QJDZ3Ts71JJop0QmEyjo39/RzY=",
+            "url": "https://www.python.org/ftp/python/3.11.6/Python-3.11.6.tgz"
         }
     },
     "latest": {
-        "3.11": "3.11.5",
+        "3.11": "3.11.6",
         "3.10": "3.10.13",
         "3.9": "3.9.18",
         "3.8": "3.8.18",
