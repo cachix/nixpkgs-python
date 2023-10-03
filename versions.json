@@ -507,6 +507,46 @@
         "3.11.6": {
             "hash": "wEm/MX6HfL+fzow6+QJDZ3Ts71JJop0QmEyjo39/RzY=",
             "url": "https://www.python.org/ftp/python/3.11.6/Python-3.11.6.tgz"
+        },
+        "3.12.0": {
+            "hash": "UUEpVtJKHvfJfxy19w4YXBPj3h9Q0THAqsYzgIBoevs=",
+            "url": "https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tgz"
+        },
+        "3.11.0": {
+            "hash": "ZEJOluJFerusiZuQ+VMJhbUe7ykFlR/r2TXw5zQUyus=",
+            "url": "https://www.python.org/ftp/python/3.11.0/Python-3.11.0.tgz"
+        },
+        "3.10.0": {
+            "hash": "xODLrVfJBpDLgT+0Zj72cLTQ9YfYFx4sQr1MkkW9J1g=",
+            "url": "https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz"
+        },
+        "3.9.0": {
+            "hash": "33lrLcjvCF7a4ll6QcHApjYl69kkh62u8v7SK1Z4c+g=",
+            "url": "https://www.python.org/ftp/python/3.9.0/Python-3.9.0.tgz"
+        },
+        "3.8.0": {
+            "hash": "8Qaa08ro5+xGeqmKZWWmKkjvGWy48UVaJFoI214Xkt8=",
+            "url": "https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz"
+        },
+        "3.7.0": {
+            "hash": "hbuf62hj4E+xcAsBjZ1C0cqsF4VZ/6RT1+akNuJZ/Q0=",
+            "url": "https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz"
+        },
+        "3.6.0": {
+            "hash": "qkclFYANJaNzmDP3bKNzXZ9LL+d8PLIfaSdeDM4wyys=",
+            "url": "https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz"
+        },
+        "3.5.0": {
+            "hash": "WE49WgJpLKUvzlBeaOzXckim8sma352xRKOQhzNrD+A=",
+            "url": "https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz"
+        },
+        "3.4.0": {
+            "hash": "0sg+oCF3aac+ix7jP/vKgUkD+FaOMPjRPmjj0fdDRJw=",
+            "url": "https://www.python.org/ftp/python/3.4.0/Python-3.4.0.tgz"
+        },
+        "3.3.0": {
+            "hash": "z+Ux6qziUD4Tp0rdx/SolILpn4uPylG0aa5cg/RQYE4=",
+            "url": "https://www.python.org/ftp/python/3.3.0/Python-3.3.0.tgz"
         }
     },
     "latest": {
@@ -519,6 +559,7 @@
         "3.5": "3.5.10",
         "3.4": "3.4.10",
         "3.3": "3.3.7",
-        "2.7": "2.7.18"
+        "2.7": "2.7.18",
+        "3.12": "3.12.0"
     }
 }
