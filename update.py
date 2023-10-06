@@ -33,7 +33,16 @@ def get_all_releases(response, versions):
         for i in range(0, latest_patch + 1):
             version = f"{cycle}.{i}"
             # unsupported openssl version & no distutils patch
-            if version in ["2.7.0", "2.7.1", "2.7.2", "2.7.3", "2.7.4", "2.7.5"]:
+            if version in [
+                    "2.7.0", 
+                    "2.7.1", 
+                    "2.7.2", 
+                    "2.7.3", 
+                    "2.7.4", 
+                    "2.7.5",
+                    # patches fail:
+                    "3.3.0",
+                    "3.9.0"]:
                 continue
             release = versions['releases'].get(version, {})
             if release.get('hash'):
