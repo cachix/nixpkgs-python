@@ -17,6 +17,6 @@ jobs:
             id-token: "write"
             contents: "read"
         steps:
-            - uses: flakestry/flakestry-publish@fix-argument-list-too-long
+            - uses: flakestry/flakestry-publish@main
               with:
                 version: "${{ inputs.tag || github.ref_name }}"
