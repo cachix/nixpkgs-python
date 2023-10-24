@@ -1,4 +1,6 @@
 {
+  description = "All Python versions packages in Nix.";
+
   inputs = {
     nixpkgs.url = "github:domenkozar/nixpkgs/cpython-moduralize";
 
