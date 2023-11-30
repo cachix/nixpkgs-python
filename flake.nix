@@ -13,8 +13,8 @@
     extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }: 
-    let 
+  outputs = { self, nixpkgs, flake-utils, ... }:
+    let
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = f: builtins.listToAttrs (map (name: { inherit name; value = f name; }) systems);
       lib = nixpkgs.lib;
@@ -90,7 +90,7 @@
                 url = "https://bugs.python.org/file48016/python-3.x-distutils-C++.patch";
                 sha256 = "1h18lnpx539h5lfxyk379dxwr8m2raigcjixkf133l4xy3f4bzi2";
               });
-            } 
+            }
             { condition = version: versionInBetween version "3.7.4" "3.7.3";
               override = replacePatch "python-3.x-distutils-C++.patch" ./patches/python-3.7.3-distutils-C++.patch;
             }
@@ -130,7 +130,7 @@
                 # no existing patch available
                 noldconfigPatch = null;
                 # otherwise it segfaults
-                stdenv = 
+                stdenv =
                   if pkgs.stdenv.isLinux
                   then pkgs.overrideCC pkgs.stdenv pkgs.gcc8
                   else pkgs.stdenv;
@@ -139,7 +139,7 @@
             # fill in the missing pc file
             { condition = version: versionInBetween version "3.5.2" "3.0" && pkgs.stdenv.isLinux;
               override = pkg: pkg.overrideAttrs (old: {
-                postInstall = '' 
+                postInstall = ''
                   ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
                 ''+ old.postInstall;
               });
