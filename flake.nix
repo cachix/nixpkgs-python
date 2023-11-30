@@ -31,7 +31,7 @@
         , version
         , hash
         , url
-        , callPackage
+        , packages
         }:
         let
           versionList = builtins.splitVersion version;
@@ -145,38 +145,44 @@
               });
             }
           ];
-        in (self.lib.applyOverrides overrides (pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" ({ 
-          inherit sourceVersion;
-          inherit (pkgs.darwin) configd;
-          hash = null;
-          self = callPackage ./self.nix { inherit version; };
-          passthruFun = pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
-        } // lib.optionalAttrs (sourceVersion.major == "3") {
-          noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
-        }))).overrideAttrs (old: {
-          src = pkgs.fetchurl {
-            inherit url;
-            sha256 = hash;
+          callPackage = pkgs.newScope {
+            inherit python;
+            pkgsBuildHost = pkgs.pkgsBuildHost // {
+              "python${sourceVersion.major}${sourceVersion.minor}" = python;
+            };
           };
-          meta = old.meta // {
-            knownVulnerabilities = [];
-          };
-        });
+          python = (self.lib.applyOverrides overrides (callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" ({
+            inherit sourceVersion;
+            inherit (pkgs.darwin) configd;
+            hash = null;
+            self = packages.${version};
+            passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
+          } // lib.optionalAttrs (sourceVersion.major == "3") {
+            noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
+          }))).overrideAttrs (old: {
+            src = pkgs.fetchurl {
+              inherit url;
+              sha256 = hash;
+            };
+            meta = old.meta // {
+              knownVulnerabilities = [];
+            };
+          });
+        in python;
 
     lib.versions = builtins.fromJSON (builtins.readFile ./versions.json);
 
     checks = forAllSystems (system:
       let
-        callPackage = lib.callPackageWith (pkgs // { nixpkgs-python = packages; });
         pkgs = nixpkgs.legacyPackages.${system};
-        getRelease = callPackage: version: source: self.lib.mkPython { 
-          inherit pkgs version callPackage; 
+        getRelease = version: source: self.lib.mkPython {
+          inherit pkgs version packages;
           inherit (source) hash url;
         };
-        getLatest = callPackage: version: latest:
-          getRelease callPackage latest self.lib.versions.releases.${latest};
-        packages = pkgs.lib.mapAttrs (getRelease callPackage) self.lib.versions.releases 
-          // pkgs.lib.mapAttrs (getLatest callPackage) self.lib.versions.latest;
+        getLatest = version: latest:
+          getRelease latest self.lib.versions.releases.${latest};
+        packages = pkgs.lib.mapAttrs getRelease self.lib.versions.releases
+          // pkgs.lib.mapAttrs getLatest self.lib.versions.latest;
       in packages
     );
 
