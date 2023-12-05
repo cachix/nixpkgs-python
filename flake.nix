@@ -2,7 +2,7 @@
   description = "All Python versions packages in Nix.";
 
   inputs = {
-    nixpkgs.url = "github:domenkozar/nixpkgs/cpython-moduralize";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
 
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
