@@ -13,8 +13,8 @@
     extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }: 
-    let 
+  outputs = { self, nixpkgs, flake-utils, ... }:
+    let
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = f: builtins.listToAttrs (map (name: { inherit name; value = f name; }) systems);
       lib = nixpkgs.lib;
@@ -31,7 +31,7 @@
         , version
         , hash
         , url
-        , callPackage
+        , packages
         }:
         let
           versionList = builtins.splitVersion version;
@@ -90,7 +90,7 @@
                 url = "https://bugs.python.org/file48016/python-3.x-distutils-C++.patch";
                 sha256 = "1h18lnpx539h5lfxyk379dxwr8m2raigcjixkf133l4xy3f4bzi2";
               });
-            } 
+            }
             { condition = version: versionInBetween version "3.7.4" "3.7.3";
               override = replacePatch "python-3.x-distutils-C++.patch" ./patches/python-3.7.3-distutils-C++.patch;
             }
@@ -130,7 +130,7 @@
                 # no existing patch available
                 noldconfigPatch = null;
                 # otherwise it segfaults
-                stdenv = 
+                stdenv =
                   if pkgs.stdenv.isLinux
                   then pkgs.overrideCC pkgs.stdenv pkgs.gcc8
                   else pkgs.stdenv;
@@ -139,44 +139,50 @@
             # fill in the missing pc file
             { condition = version: versionInBetween version "3.5.2" "3.0" && pkgs.stdenv.isLinux;
               override = pkg: pkg.overrideAttrs (old: {
-                postInstall = '' 
+                postInstall = ''
                   ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
                 ''+ old.postInstall;
               });
             }
           ];
-        in (self.lib.applyOverrides overrides (pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" ({ 
-          inherit sourceVersion;
-          inherit (pkgs.darwin) configd;
-          hash = null;
-          self = callPackage ./self.nix { inherit version; };
-          passthruFun = pkgs.callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
-        } // lib.optionalAttrs (sourceVersion.major == "3") {
-          noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
-        }))).overrideAttrs (old: {
-          src = pkgs.fetchurl {
-            inherit url;
-            sha256 = hash;
+          callPackage = pkgs.newScope {
+            inherit python;
+            pkgsBuildHost = pkgs.pkgsBuildHost // {
+              "python${sourceVersion.major}${sourceVersion.minor}" = python;
+            };
           };
-          meta = old.meta // {
-            knownVulnerabilities = [];
-          };
-        });
+          python = (self.lib.applyOverrides overrides (callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" ({
+            inherit sourceVersion;
+            inherit (pkgs.darwin) configd;
+            hash = null;
+            self = packages.${version};
+            passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
+          } // lib.optionalAttrs (sourceVersion.major == "3") {
+            noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
+          }))).overrideAttrs (old: {
+            src = pkgs.fetchurl {
+              inherit url;
+              sha256 = hash;
+            };
+            meta = old.meta // {
+              knownVulnerabilities = [];
+            };
+          });
+        in python;
 
     lib.versions = builtins.fromJSON (builtins.readFile ./versions.json);
 
     checks = forAllSystems (system:
       let
-        callPackage = lib.callPackageWith (pkgs // { nixpkgs-python = packages; });
         pkgs = nixpkgs.legacyPackages.${system};
-        getRelease = callPackage: version: source: self.lib.mkPython { 
-          inherit pkgs version callPackage; 
+        getRelease = version: source: self.lib.mkPython {
+          inherit pkgs version packages;
           inherit (source) hash url;
         };
-        getLatest = callPackage: version: latest:
-          getRelease callPackage latest self.lib.versions.releases.${latest};
-        packages = pkgs.lib.mapAttrs (getRelease callPackage) self.lib.versions.releases 
-          // pkgs.lib.mapAttrs (getLatest callPackage) self.lib.versions.latest;
+        getLatest = version: latest:
+          getRelease latest self.lib.versions.releases.${latest};
+        packages = pkgs.lib.mapAttrs getRelease self.lib.versions.releases
+          // pkgs.lib.mapAttrs getLatest self.lib.versions.latest;
       in packages
     );
 
