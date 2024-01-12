@@ -19,7 +19,7 @@ jobs:
         install_url: https://nixos-nix-install-tests.cachix.org/serve/r1x1gcvnw0hc9cv531z86pa5lfn8s9jn/install 
         install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
     - name: Install Cachix
-      uses: cachix/cachix-action@v13
+      uses: cachix/cachix-action@v14
       with:
         name: nixpkgs-python
         extraPullNames: devenv
