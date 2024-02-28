@@ -59,6 +59,10 @@
               # patch not available
               override = filterOutPatch "atomic_pyc.patch";
             }
+            { condition = version: versionInBetween version "3.7" "3.3";
+              # patch not available
+              override = filterOutPatch "loongarch-support.patch";
+            }
             { condition = version: versionInBetween version "2.7.13" "2.6";
               override = pkg: filterOutPatch "find_library-gcc10.patch" (filterOutPatch "profile-task.patch" pkg);
             }
