@@ -41,6 +41,7 @@ def get_all_releases(response, versions):
                     "2.7.4", 
                     "2.7.5",
                     "3.2.0", # it's named 3.2 for some reason
+                    "3.1.0", # it's named 3.2 for some reason
                     # patches fail:
                     "3.3.0",
                     "3.9.0"]:
