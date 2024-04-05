@@ -24,7 +24,7 @@ def get_all_releases(response, versions):
         latest_version_split = latest_version.split('.')
         latest_patch = int(latest_version_split[-1])
 
-        if cycle == "2.6":
+        if cycle in ["2.6", "3.0", "3.1", "3.2"]:
             continue
 
         versions['latest'][cycle] = latest_version
@@ -40,9 +40,6 @@ def get_all_releases(response, versions):
                     "2.7.3", 
                     "2.7.4", 
                     "2.7.5",
-                    "3.2.0", # it's named 3.2 for some reason
-                    "3.1.0", # it's named 3.1 for some reason
-                    "3.0.0", # it's named 3.0 for some reason
                     # patches fail:
                     "3.3.0",
                     "3.9.0"]:
