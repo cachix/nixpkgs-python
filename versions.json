@@ -571,10 +571,14 @@
         "2.7.18": {
             "hash": "2jCA47SI9kij16RWDd7olShMM4CxHW3nXtuYZSa5qBQ=",
             "url": "https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz"
+        },
+        "3.12.3": {
+            "hash": "prlFn0Wm67vBr0T1diYj+jVaDIcgjtQXYos3nXYt3bA=",
+            "url": "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tgz"
         }
     },
     "latest": {
-        "3.12": "3.12.2",
+        "3.12": "3.12.3",
         "3.11": "3.11.9",
         "3.10": "3.10.14",
         "3.9": "3.9.19",
