@@ -24,16 +24,6 @@ Using the following platforms:
 
 ## Usage
 
-### ad-hoc
-
-You can run this package ad-hoc using the following command:
-
-    $ nix shell github:cachix/nixpkgs-python#'"2.7"'
-
-Or specify a minor version:
-
-    $ nix shell github:cachix/nixpkgs-python#'"2.7.16"'
-
 ### [devenv.sh](https://devenv.sh)
 
 Create `devenv.nix`:
@@ -75,3 +65,14 @@ Then run:
   };
 }
 ```
+
+### nix shell
+
+You can run this package ad-hoc using the following command:
+
+    $ nix shell github:cachix/nixpkgs-python#'"2.7"'
+
+Or specify a minor version:
+
+    $ nix shell github:cachix/nixpkgs-python#'"2.7.16"'
+
