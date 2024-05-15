@@ -15,9 +15,6 @@ jobs:
           ref: main
     - name: Install Nix
       uses: cachix/install-nix-action@8887e596b4ee1134dae06b98d573bd674693f47c # v26
-      with:
-        install_url: https://nixos-nix-install-tests.cachix.org/serve/r1x1gcvnw0hc9cv531z86pa5lfn8s9jn/install 
-        install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
     - name: Install Cachix
       uses: cachix/cachix-action@v14
       with:
@@ -35,7 +32,7 @@ jobs:
         title: Update Python versions
         body: |
           Automatically created pull-request to update Python versions.
-          
+
           This is the result of running:
 
           ```
