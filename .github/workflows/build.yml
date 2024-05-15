@@ -17,9 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cachix/install-nix-action@8887e596b4ee1134dae06b98d573bd674693f47c # v26
-      with: 
-        install_url: https://nixos-nix-install-tests.cachix.org/serve/r1x1gcvnw0hc9cv531z86pa5lfn8s9jn/install 
-        install_options: --tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve
     - uses: cachix/cachix-action@v14
       with:
         name: nixpkgs-python
