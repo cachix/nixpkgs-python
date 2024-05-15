@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [[self-hosted, linux, X64], [macos-latest], [self-hosted, macOS, ARM64], [self-hosted, linux, ARM64]]
+        os: [[self-hosted, linux, X64], [macos-13], [self-hosted, macOS, ARM64], [self-hosted, linux, ARM64]]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
