@@ -16,7 +16,7 @@ jobs:
     - name: Install Nix
       uses: cachix/install-nix-action@ba0dd844c9180cbf77aa72a116d6fbc515d0e87b # v27
     - name: Install Cachix
-      uses: cachix/cachix-action@v14
+      uses: cachix/cachix-action@v15
       with:
         name: nixpkgs-python
         extraPullNames: devenv
