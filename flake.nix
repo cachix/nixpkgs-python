@@ -139,6 +139,14 @@
                   else pkgs.stdenv;
               });
             }
+            # compatibility with substitutions done by the nixpkgs derivation
+            { condition = version: versionInBetween version "3.7" "3.0";
+              override = pkg: pkg.overrideAttrs  (old: {
+                prePatch = ''
+                  substituteInPlace Lib/subprocess.py --replace '"/bin/sh"' "'/bin/sh'"
+                '' + old.prePatch;
+              });
+            }
             # fill in the missing pc file
             { condition = version: versionInBetween version "3.5.2" "3.0" && pkgs.stdenv.isLinux;
               override = pkg: pkg.overrideAttrs (old: {
