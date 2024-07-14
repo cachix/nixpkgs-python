@@ -78,6 +78,10 @@
             { condition = version: versionInBetween version "2.7.17" "2.7.6";
               override = replacePatch "python-2.7-distutils-C++.patch" ./patches/2.7.17-distutils-C++.patch;
             }
+            # this patch reverts an ActiveState change that was introduced in 2.7.18.8
+            { condition = version: versionInBetween version "2.7.18.8" "2.7";
+              override = pkg: filterOutPatch "20ea5b46aaf1e7bdf9d6905ba8bece2cc73b05b0.patch" pkg;
+            }
             # py3
             { condition = version: versionInBetween version "3.8.7" "3.8";
               override = overrideLDConfigPatch ./patches/3.8.6-no-ldconfig.patch;
