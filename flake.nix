@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-1809.url = "github:NixOS/nixpkgs/nixos-18.09";
+    nixpkgs-1809.flake = false;
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
   };
@@ -12,14 +14,14 @@
     extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
   };
 
-  outputs = { self, nixpkgs, ... }:
+  outputs = { self, nixpkgs, nixpkgs-1809, ... }:
     let
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = f: builtins.listToAttrs (map (name: { inherit name; value = f name; }) systems);
       lib = nixpkgs.lib;
       versionInBetween = version: lower: upper:
         lib.versionOlder version lower && lib.versionAtLeast version upper;
-    in {
+    in builtins.trace "nixpkgs-python" {
     lib.applyOverrides = overrides: pkg:
       let
         matching = builtins.filter ({ condition, ... }: condition pkg.version) overrides;
@@ -27,6 +29,7 @@
       in lib.foldl apply pkg matching;
     lib.mkPython =
         { pkgs
+        , pkgs-1809
         , version
         , hash
         , url
@@ -168,6 +171,7 @@
             hash = null;
             self = packages.${version};
             passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
+            openssl_legacy = pkgs-1809.openssl_1_0_2;
           } // lib.optionalAttrs (sourceVersion.major == "3") {
             noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
           }))).overrideAttrs (old: {
@@ -186,8 +190,9 @@
     checks = forAllSystems (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        pkgs-1809 = (import nixpkgs-1809) { system = system; };
         getRelease = version: source: self.lib.mkPython {
-          inherit pkgs version packages;
+          inherit pkgs pkgs-1809 version packages;
           inherit (source) hash url;
         };
         getLatest = version: latest:
