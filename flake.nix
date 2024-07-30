@@ -34,11 +34,12 @@
         }:
         let
           versionList = builtins.splitVersion version;
+          versionSuffixList = builtins.concatLists [[""] (lib.drop 3 versionList)];
           sourceVersion = {
             major = builtins.elemAt versionList 0;
             minor = builtins.elemAt versionList 1;
             patch = builtins.elemAt versionList 2;
-            suffix = "";
+            suffix = builtins.concatStringsSep "." versionSuffixList;
           };
           infix = if sourceVersion.major == "2" then "2.7/" else "";
           overrideLDConfigPatch = path: pkg: pkg.override {
