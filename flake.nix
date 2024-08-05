@@ -34,11 +34,12 @@
         }:
         let
           versionList = builtins.splitVersion version;
+          versionSuffixList = builtins.concatLists [[""] (lib.drop 3 versionList)];
           sourceVersion = {
             major = builtins.elemAt versionList 0;
             minor = builtins.elemAt versionList 1;
             patch = builtins.elemAt versionList 2;
-            suffix = "";
+            suffix = builtins.concatStringsSep "." versionSuffixList;
           };
           infix = if sourceVersion.major == "2" then "2.7/" else "";
           overrideLDConfigPatch = path: pkg: pkg.override {
@@ -187,7 +188,7 @@
 
     lib.versions = builtins.fromJSON (builtins.readFile ./versions.json);
 
-    checks = forAllSystems (system:
+    packages = forAllSystems (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         getRelease = version: source: self.lib.mkPython {
@@ -201,6 +202,19 @@
       in packages
     );
 
-    packages = self.checks;
+    checks = forAllSystems (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+        pkgs.lib.concatMapAttrs (version: python: {
+          ${version} = python;
+        } // lib.optionalAttrs (versionInBetween version "3" "2.7.18") {
+          ${version + "-ssl"} = pkgs.runCommand "${version}-test-ssl" { } ''
+            set -x
+
+            mkdir $out
+            ${python}/bin/python -c 'import ssl; print(ssl.OPENSSL_VERSION)' | tee $out/openssl-version
+          '';
+        }) self.packages.${system});
   };
 }
