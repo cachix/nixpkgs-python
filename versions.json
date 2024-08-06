@@ -595,6 +595,10 @@
         "2.7.18.6_CVE_RC3": {
             "hash": "SrG3wgRfkbfasPkCtwmiklYfE438g/AxHUeAhVea9Bw=",
             "url": "https://github.com/ActiveState/cpython/archive/refs/tags/v2.7.18.6_CVE_RC3.tar.gz"
+        },
+        "2.7.18.6_CVE": {
+            "hash": "sV47Vxry4BHor9PLhN5bFKWFTKv4LBemrWgzVupiZR0=",
+            "url": "https://github.com/ActiveState/cpython/archive/refs/tags/v2.7.18.6_CVE.tar.gz"
         }
     },
     "latest": {
