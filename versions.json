@@ -591,19 +591,56 @@
         "2.7.18.9": {
             "hash": "Tl94mHYHLTDKhYxwaPVvPqhNC+V2QzV+F67jKSMA39U=",
             "url": "https://github.com/ActiveState/cpython/archive/refs/tags/v2.7.18.9.tar.gz"
+        },
+        "3.13.0": {
+            "hash": "EkRcez2zEmxBGQv9wcgjnDnHGUBOhEurvQFaG8P6/NQ=",
+            "url": "https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz"
+        },
+        "3.12.5": {
+            "hash": "ONxOLCYdScZhGWBm7b+3D9sWvkp5zIIgwiTf61Y21AU=",
+            "url": "https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tgz"
+        },
+        "3.12.6": {
+            "hash": "haTBvpBtIOXFpp8kZrANp2nCIdamhKz9OlFNv1vxCmY=",
+            "url": "https://www.python.org/ftp/python/3.12.6/Python-3.12.6.tgz"
+        },
+        "3.12.7": {
+            "hash": "c6yP54Aie/Nxrdg3PDB59CoNxi3v+NYSzRWmGAgqtiM=",
+            "url": "https://www.python.org/ftp/python/3.12.7/Python-3.12.7.tgz"
+        },
+        "3.11.10": {
+            "hash": "kvL68kJoG/pAbVOlHhfULFNzr/4joTDNlpfhMu9XRwY=",
+            "url": "https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz"
+        },
+        "3.10.15": {
+            "hash": "onhk5boqRHT49sWKuS/1J2esi2bxZGkjNVpT/j7xUHQ=",
+            "url": "https://www.python.org/ftp/python/3.10.15/Python-3.10.15.tgz"
+        },
+        "3.9.20": {
+            "hash": "HnHwBiImZuCjn1pHvoIhQVwixN2PJTNMxBruJgs9N54=",
+            "url": "https://www.python.org/ftp/python/3.9.20/Python-3.9.20.tgz"
+        },
+        "3.8.20": {
+            "hash": "ny1ZYsJYPmfvdZJM1W0MGveL9F7FcDXPiizAn3T0v3g=",
+            "url": "https://www.python.org/ftp/python/3.8.20/Python-3.8.20.tgz"
+        },
+        "2.7.18.10": {
+            "hash": "hiYhfSaHsXTD0NI4+JuNqhvd2ali2qfsmXfXCbCKorg=",
+            "url": "https://github.com/ActiveState/cpython/archive/refs/tags/v2.7.18.10.tar.gz"
         }
     },
     "latest": {
-        "3.12": "3.12.4",
-        "3.11": "3.11.9",
-        "3.10": "3.10.14",
-        "3.9": "3.9.19",
-        "3.8": "3.8.19",
+        "3.12": "3.12.7",
+        "3.11": "3.11.10",
+        "3.10": "3.10.15",
+        "3.9": "3.9.20",
+        "3.8": "3.8.20",
         "3.7": "3.7.17",
         "3.6": "3.6.15",
         "3.5": "3.5.10",
         "3.4": "3.4.10",
         "3.3": "3.3.7",
-        "2.7": "2.7.18.9"
+        "2.7": "2.7.18.9",
+        "3.13": "3.13.0"
     }
 }
