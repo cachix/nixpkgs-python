@@ -180,14 +180,19 @@
               "python${sourceVersion.major}${sourceVersion.minor}" = python;
             };
           };
-          python = (self.lib.applyOverrides overrides (callPackage "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix" ({
+
+          pythonFun = import "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix";
+          python = (self.lib.applyOverrides overrides (callPackage pythonFun ({
             inherit sourceVersion;
-            inherit (pkgs.darwin) configd;
             hash = null;
             self = packages.${version};
             passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
           } // lib.optionalAttrs (sourceVersion.major == "3") {
             noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
+          } // lib.optionalAttrs (lib.functionArgs pythonFun ? configd) {
+            # Nixpkgs had a Darwin SDK refactor in 24.11 which removed configd from the Python derivation
+            # Only inject configd for older Nixpkgs where it's required.
+            inherit (pkgs.darwin) configd;
           }))).overrideAttrs (old: {
             src = pkgs.fetchurl {
               inherit url;
