@@ -627,13 +627,33 @@
         "2.7.18.10": {
             "hash": "hiYhfSaHsXTD0NI4+JuNqhvd2ali2qfsmXfXCbCKorg=",
             "url": "https://github.com/ActiveState/cpython/archive/refs/tags/v2.7.18.10.tar.gz"
+        },
+        "3.13.1": {
+            "hash": "FROSWp8lXvB5Pb8veLtFM8nxhL3QrRl2P9f0ekAKfFU=",
+            "url": "https://www.python.org/ftp/python/3.13.1/Python-3.13.1.tgz"
+        },
+        "3.12.8": {
+            "hash": "WXhDXEeaN2ZIywKFTfO4kqzp7X0ysf6tZScSvunQOkU=",
+            "url": "https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz"
+        },
+        "3.11.11": {
+            "hash": "iDvd7jyS/Lkc+cCcU0MZaVPLuc7YJiE1RYSWk5cIaO0=",
+            "url": "https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz"
+        },
+        "3.10.16": {
+            "hash": "8uIu2WWpPP62QjeO1ubNvBJ2gmZLJBI2efPQE/r+nNA=",
+            "url": "https://www.python.org/ftp/python/3.10.16/Python-3.10.16.tgz"
+        },
+        "3.9.21": {
+            "hash": "Znw7osqY056tEWL2VIw0dXaFguL/ieCCHSXrlWrAmUQ=",
+            "url": "https://www.python.org/ftp/python/3.9.21/Python-3.9.21.tgz"
         }
     },
     "latest": {
-        "3.12": "3.12.7",
-        "3.11": "3.11.10",
-        "3.10": "3.10.15",
-        "3.9": "3.9.20",
+        "3.12": "3.12.8",
+        "3.11": "3.11.11",
+        "3.10": "3.10.16",
+        "3.9": "3.9.21",
         "3.8": "3.8.20",
         "3.7": "3.7.17",
         "3.6": "3.6.15",
@@ -641,6 +661,6 @@
         "3.4": "3.4.10",
         "3.3": "3.3.7",
         "2.7": "2.7.18.9",
-        "3.13": "3.13.0"
+        "3.13": "3.13.1"
     }
 }
