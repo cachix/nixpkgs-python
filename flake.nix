@@ -181,7 +181,7 @@
             };
           };
 
-          pythonFun = import "${pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix";
+          pythonFun = import "${toString pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix";
           python = (self.lib.applyOverrides overrides (callPackage pythonFun ({
             inherit sourceVersion;
             hash = null;
