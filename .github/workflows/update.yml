@@ -14,7 +14,7 @@ jobs:
       with:
           ref: main
     - name: Install Nix
-      uses: cachix/install-nix-action@08dcb3a5e62fa31e2da3d490afc4176ef55ecd72 # v30
+      uses: cachix/install-nix-action@d1ca217b388ee87b2507a9a93bf01368bde7cec2 # v31
     - name: Install Cachix
       uses: cachix/cachix-action@v15
       with:
