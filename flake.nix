@@ -173,6 +173,12 @@
                 ''+ old.postInstall;
               });
             }
+            # The patch for CVE-2025-0938 is available for 3.9+
+            # https://www.cve.org/CVERecord?id=CVE-2025-0938
+            # https://github.com/python/cpython/pull/129418
+            { condition = version: versionInBetween version "3.9" "2";
+              override = filterOutPatch "CVE-2025-0938.patch";
+            }
           ];
           callPackage = pkgs.newScope {
             inherit python;
