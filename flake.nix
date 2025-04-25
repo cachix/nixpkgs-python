@@ -161,7 +161,7 @@
             { condition = version: versionInBetween version "3.7" "3.0";
               override = pkg: pkg.overrideAttrs  (old: {
                 prePatch = ''
-                  substituteInPlace Lib/subprocess.py --replace '"/bin/sh"' "'/bin/sh'"
+                  substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
                 '' + old.prePatch;
               });
             }
