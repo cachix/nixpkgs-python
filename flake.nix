@@ -2,13 +2,13 @@
   description = "All Python versions packages in Nix.";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
   };
 
   nixConfig = {
-    substituters = "https://cache.nixos.org https://nixpkgs-python.cachix.org";
+    extra-substituters = "https://nixpkgs-python.cachix.org";
     extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
   };
 
@@ -161,7 +161,7 @@
             { condition = version: versionInBetween version "3.7" "3.0";
               override = pkg: pkg.overrideAttrs  (old: {
                 prePatch = ''
-                  substituteInPlace Lib/subprocess.py --replace '"/bin/sh"' "'/bin/sh'"
+                  substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
                 '' + old.prePatch;
               });
             }
@@ -172,6 +172,12 @@
                   ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
                 ''+ old.postInstall;
               });
+            }
+            # The patch for CVE-2025-0938 is available for 3.9+
+            # https://www.cve.org/CVERecord?id=CVE-2025-0938
+            # https://github.com/python/cpython/pull/129418
+            { condition = version: versionInBetween version "3.12" "2";
+              override = filterOutPatch "CVE-2025-0938.patch";
             }
           ];
           callPackage = pkgs.newScope {
