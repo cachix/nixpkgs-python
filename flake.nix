@@ -17,8 +17,8 @@
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = f: builtins.listToAttrs (map (name: { inherit name; value = f name; }) systems);
       lib = nixpkgs.lib;
-      versionInBetween = version: lower: upper:
-        lib.versionOlder version lower && lib.versionAtLeast version upper;
+      versionInBetween = version: upper: lower:
+        lib.versionAtLeast version lower && lib.versionOlder version upper;
     in {
     lib.applyOverrides = overrides: pkg:
       let
@@ -178,6 +178,12 @@
             # https://github.com/python/cpython/pull/129418
             { condition = version: versionInBetween version "3.12" "2";
               override = filterOutPatch "CVE-2025-0938.patch";
+            }
+            { condition = version: versionInBetween version "3.12" "3.0";
+              override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
+            }
+            { condition = version: versionInBetween version "3.11" "3.0";
+              override = filterOutPatch "raise-OSError-for-ERR_LIB_SYS.patch";
             }
           ];
           callPackage = pkgs.newScope {
