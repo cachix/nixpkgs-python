@@ -182,10 +182,13 @@
             # https://www.cve.org/CVERecord?id=CVE-2025-0938
             # https://github.com/python/cpython/pull/129418
             # Applied to:
-            #   * 3.11.4-3.11.11
-            #   * 3.11.16
+            #   * 3.11.4-3.11.11,3.11.16
+            #   * 3.12.0-3.12.8
+            #   * 3.13.0-3.13.1
             { condition = version:
-                lib.versionAtLeast version "3.13.2" ||
+                lib.versionAtLeast version "3.14" ||
+                versionInBetween version "3.14" "3.13.2" ||
+                versionInBetween version "3.13" "3.12.9" ||
                 versionInBetween version "3.11.4" "3.11.0" || versionInBetween version "3.12" "3.11.12" ||
                 versionInBetween version "3.11" "3.10.17" || versionInBetween version "3.10.16" "3.10" ||
                 lib.versionOlder version "3.10";
