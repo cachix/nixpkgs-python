@@ -17,8 +17,8 @@
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = f: builtins.listToAttrs (map (name: { inherit name; value = f name; }) systems);
       lib = nixpkgs.lib;
-      versionInBetween = version: lower: upper:
-        lib.versionOlder version lower && lib.versionAtLeast version upper;
+      versionInBetween = version: upper: lower:
+        lib.versionAtLeast version lower && lib.versionOlder version upper;
     in {
     lib.applyOverrides = overrides: pkg:
       let
@@ -173,11 +173,34 @@
                 ''+ old.postInstall;
               });
             }
-            # The patch for CVE-2025-0938 is available for 3.9+
+            # https://www.cve.org/CVERecord?id=CVE-2024-12254
+            # Applied to:
+            #   * 3.12.0-3.13.1
+            { condition = version:
+                versionInBetween version "3.14" "3.13.2" ||
+                versionInBetween version "3.13" "3.12.9";
+              override = filterOutPatch "CVE-2024-12254.patch";
+            }
             # https://www.cve.org/CVERecord?id=CVE-2025-0938
             # https://github.com/python/cpython/pull/129418
-            { condition = version: versionInBetween version "3.12" "2";
+            # Applied to:
+            #   * 3.11.4-3.11.11,3.11.16
+            #   * 3.12.0-3.12.8
+            #   * 3.13.0-3.13.1
+            { condition = version:
+                lib.versionAtLeast version "3.14" ||
+                versionInBetween version "3.14" "3.13.2" ||
+                versionInBetween version "3.13" "3.12.9" ||
+                versionInBetween version "3.11.4" "3.11.0" || versionInBetween version "3.12" "3.11.12" ||
+                versionInBetween version "3.11" "3.10.17" || versionInBetween version "3.10.16" "3.10" ||
+                lib.versionOlder version "3.10";
               override = filterOutPatch "CVE-2025-0938.patch";
+            }
+            { condition = version: versionInBetween version "3.11.5" "2.0" || versionInBetween version "3.12" "3.11.12";
+              override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
+            }
+            { condition = version: versionInBetween version "3.10.11" "3.10.0" || versionInBetween version "3.11" "3.10.17" ;
+              override = filterOutPatch "raise-OSError-for-ERR_LIB_SYS.patch";
             }
           ];
           callPackage = pkgs.newScope {

@@ -4,3 +4,4 @@
 .devenv*
 devenv.local.nix
 
+result*
