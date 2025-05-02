@@ -176,7 +176,9 @@
             # https://www.cve.org/CVERecord?id=CVE-2024-12254
             # Applied to:
             #   * 3.12.0-3.13.1
-            { condition = version: lib.versionAtLeast version "3.13.2";
+            { condition = version:
+                versionInBetween version "3.14" "3.13.2" ||
+                versionInBetween version "3.13" "3.12.9";
               override = filterOutPatch "CVE-2024-12254.patch";
             }
             # https://www.cve.org/CVERecord?id=CVE-2025-0938
