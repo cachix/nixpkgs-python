@@ -249,6 +249,25 @@
       in packages
     );
 
+    patchChecks = forAllSystems (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        patchedPackages = pkgs.lib.mapAttrs (name: pkg:
+          pkg.overrideAttrs (_: {
+            phases = ["unpackPhase" "patchPhase" "installPhase"];
+            installPhase = "mkdir -p $out";
+            separateDebugInfo = false;
+            dontStrip = true;
+          })
+        ) self.packages.${system};
+      in
+        patchedPackages // {
+          all = pkgs.linkFarm "all-patch-checks" (
+            lib.mapAttrsToList (name: drv: { inherit name; path = drv; }) patchedPackages
+          );
+        }
+    );
+
     checks = forAllSystems (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
