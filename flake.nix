@@ -42,18 +42,34 @@
             suffix = builtins.concatStringsSep "." versionSuffixList;
           };
           infix = if sourceVersion.major == "2" then "2.7/" else "";
+
+          # Patch helpers
+
           overrideLDConfigPatch = path: pkg: pkg.override {
             noldconfigPatch = path;
           };
-          replacePatch = name: patch: pkg: pkg.overrideAttrs (old: {
-            patches = (lib.filter (elem: if builtins.isNull elem then true else !lib.hasSuffix name elem) old.patches) ++ [ patch ];
+          # Override the patches of a derivation by applying a function f: oldPatches -> newPatches
+          applyPatches = f: pkg: pkg.overrideAttrs (old: {
+            patches = f old.patches;
           });
-          filterOutPatch = name: pkg: replacePatch name null pkg;
+          # Replace a patch by name in a derivation.
+          replacePatch = name: patch: pkg: lib.pipe pkg [
+            (filterOutPatch name)
+            (appendPatches [ patch ])
+          ];
+          # Remove a patch by name from a derivation.
+          filterOutPatch = name: applyPatches (lib.filter (elem: if builtins.isNull elem then true else !lib.hasSuffix name elem));
+          # Append patches to a derivation.
+          appendPatches = patches: applyPatches (oldPatches: oldPatches ++ patches);
+
           overrides = [
             # py2
             { condition = version: versionInBetween version "2.7.3" "2.6";
               # patch not available
-              override = pkg: filterOutPatch "deterministic-build.patch" (filterOutPatch "no-win64-workaround.patch" pkg);
+              override = pkg: lib.pipe pkg [
+                (filterOutPatch "deterministic-build.patch")
+                (filterOutPatch "no-win64-workaround.patch")
+              ];
             }
             { condition = version: versionInBetween version "2.7.4" "2.6";
               # patch not available
@@ -64,7 +80,10 @@
               override = filterOutPatch "loongarch-support.patch";
             }
             { condition = version: versionInBetween version "2.7.13" "2.6";
-              override = pkg: filterOutPatch "find_library-gcc10.patch" (filterOutPatch "profile-task.patch" pkg);
+              override = pkg: lib.pipe pkg [
+                (filterOutPatch "find_library-gcc10.patch")
+                (filterOutPatch "profile-task.patch")
+              ];
             }
             # patch not available before 2.7.11
             { condition = version: versionInBetween version "2.7.11" "2.6";
@@ -81,7 +100,7 @@
             }
             # this patch reverts an ActiveState change that was introduced in 2.7.18.8
             { condition = version: versionInBetween version "2.7.18.8" "2.7";
-              override = pkg: filterOutPatch "20ea5b46aaf1e7bdf9d6905ba8bece2cc73b05b0.patch" pkg;
+              override = filterOutPatch "20ea5b46aaf1e7bdf9d6905ba8bece2cc73b05b0.patch";
             }
             # py3
             { condition = version: versionInBetween version "3.8.7" "3.8";
@@ -111,7 +130,7 @@
             }
             { condition = version: versionInBetween version "3.5.3" "3.5";
               # no existing patch available
-              override = overrideLDConfigPatch null;
+              override = overrideLDConfigPatch ./patches/no-op.patch;
             }
             { condition = version: versionInBetween version "3.6.6" "3.4";
               override = replacePatch "python-3.x-distutils-C++.patch" (pkgs.fetchpatch {
@@ -126,34 +145,34 @@
             }
             # fix darwin compilation
             { condition = version: versionInBetween version "3.8.4" "3.8" || versionInBetween version "3.7.8" "3.0";
-              override = pkg: pkg.overrideAttrs (old: {
-                patches = old.patches ++ [(pkgs.fetchpatch {
+              override = appendPatches [
+                (pkgs.fetchpatch {
                   url = "https://github.com/python/cpython/commit/8ea6353.patch";
                   sha256 = "xXRDwtMMhb66J4Lis0rtTNxARgPqLAqR2y3YtkJOt2g=";
-                })];
-              });
+                })
+              ];
             }
             # Fix ensurepip for 3.6: https://bugs.python.org/issue45700
             { condition = version: versionInBetween version "3.6.15" "3.6";
-              override = pkg: pkg.overrideAttrs (old: {
-                patches = old.patches ++ [(pkgs.fetchpatch {
+              override = appendPatches [
+                (pkgs.fetchpatch {
                   url = "https://github.com/python/cpython/commit/8766cb74e186d3820db0a855.patch";
                   sha256 = "IzAp3M6hpSNcbVRttzvXNDyAVK7vLesKZDEDkdYbuww=";
                 })
                 (pkgs.fetchpatch {
                   url = "https://github.com/python/cpython/commit/f0be4bbb9b3cee876249c23f.patch";
                   sha256 = "FUF7ZkkatS4ON4++pR9XJQFQLW1kKSVzSs8NAS19bDY=";
-                })];
-              });
+                })
+              ];
             }
             { condition = version: versionInBetween version "3.4" "3.0";
               override = pkg: (pkg.override {
                 # no existing patch available
-                noldconfigPatch = null;
+                noldconfigPatch = ./patches/no-op.patch;
                 # otherwise it segfaults
                 stdenv =
                   if pkgs.stdenv.isLinux
-                  then pkgs.overrideCC pkgs.stdenv pkgs.gcc8
+                  then pkgs.overrideCC pkgs.stdenv pkgs.gcc9 # gcc8 no longer available
                   else pkgs.stdenv;
               });
             }
@@ -172,35 +191,6 @@
                   ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
                 ''+ old.postInstall;
               });
-            }
-            # https://www.cve.org/CVERecord?id=CVE-2024-12254
-            # Applied to:
-            #   * 3.12.0-3.13.1
-            { condition = version:
-                versionInBetween version "3.14" "3.13.2" ||
-                versionInBetween version "3.13" "3.12.9";
-              override = filterOutPatch "CVE-2024-12254.patch";
-            }
-            # https://www.cve.org/CVERecord?id=CVE-2025-0938
-            # https://github.com/python/cpython/pull/129418
-            # Applied to:
-            #   * 3.11.4-3.11.11,3.11.16
-            #   * 3.12.0-3.12.8
-            #   * 3.13.0-3.13.1
-            { condition = version:
-                lib.versionAtLeast version "3.14" ||
-                versionInBetween version "3.14" "3.13.2" ||
-                versionInBetween version "3.13" "3.12.9" ||
-                versionInBetween version "3.11.4" "3.11.0" || versionInBetween version "3.12" "3.11.12" ||
-                versionInBetween version "3.11" "3.10.17" || versionInBetween version "3.10.16" "3.10" ||
-                lib.versionOlder version "3.10";
-              override = filterOutPatch "CVE-2025-0938.patch";
-            }
-            { condition = version: versionInBetween version "3.11.5" "2.0" || versionInBetween version "3.12" "3.11.12";
-              override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
-            }
-            { condition = version: versionInBetween version "3.10.11" "3.10.0" || versionInBetween version "3.11" "3.10.17" ;
-              override = filterOutPatch "raise-OSError-for-ERR_LIB_SYS.patch";
             }
           ];
           callPackage = pkgs.newScope {
