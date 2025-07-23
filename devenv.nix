@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   languages.python = {
     enable = true;
@@ -13,6 +13,16 @@
     pkgs.jq
     pkgs.nix-fast-build
   ];
+
+  scripts.nixpkgs-python-check.exec = ''
+    python -m scripts.check_with_summary "$@"
+  '';
+  scripts.nixpkgs-python-summary.exec = ''
+    python -m scripts.json_to_summary "$@"
+  '';
+  scripts.nixpkgs-python-update.exec = ''
+    python -m scripts.update "$@"
+  '';
 
   git-hooks.hooks = {
     nixfmt-rfc-style.enable = true;

@@ -9,10 +9,6 @@ dependencies = [
     "rich>=14.0.0",
 ]
 
-[project.scripts]
-nixpkgs-python-update = "scripts.update:main"
-nixpkgs-python-check = "scripts.check_with_summary:main"
-nixpkgs-python-summary = "scripts.json_to_summary:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["scripts"]
