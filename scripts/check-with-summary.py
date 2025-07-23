@@ -113,8 +113,6 @@ def run_nix_fast_build(json_output: bool) -> str:
         "--",
         "nix-fast-build",
         "--flake=.#checks",
-        "--eval-workers",
-        "4",
         "--no-link",
     ]
 
