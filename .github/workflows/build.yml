@@ -21,6 +21,10 @@ jobs:
       with:
         name: nixpkgs-python
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: Install devenv
+      if: runner.os == 'macOS'
+      run: |
+        nix profile install --accept-flake-config github:cachix/devenv/latest
     - name: Check patch phase
       continue-on-error: true
       run: |
