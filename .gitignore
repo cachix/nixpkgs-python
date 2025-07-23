@@ -4,6 +4,11 @@
 .devenv*
 devenv.local.nix
 
+# Nix
 result*
 
+# pre-commit
 .pre-commit-config.yaml
+
+# Python
+__pycache__
