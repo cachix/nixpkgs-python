@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 from typing import List, Set, Tuple
 
@@ -26,50 +27,32 @@ class Colors:
             self.NC = ""
 
 
-def parse_build_output(build_log: str) -> Tuple[Set[str], Set[str]]:
-    """Parse nix-fast-build output to identify successful and failed checks."""
+def parse_build_results(result_file: str) -> Tuple[Set[str], Set[str]]:
+    """Parse nix-fast-build JSON result file to identify successful and failed BUILD checks."""
+    successful_checks = set()
     failed_checks = set()
-    potential_success = set()
 
-    # Parse error messages - both individual BuildFailure and Failed attributes list
-    error_pattern = r"ERROR:nix_fast_build:BuildFailure for ([^:]+):"
-    for match in re.finditer(error_pattern, build_log):
-        check_name = match.group(1)
-        # Convert format like x86_64-linux."3.5.1" to checks.x86_64-linux.3.5.1
-        if not check_name.startswith("checks."):
-            check_name = re.sub(r"\.", ".checks.", check_name, count=1)
-        check_name = check_name.replace('"', "")
-        failed_checks.add(check_name)
+    try:
+        with open(result_file, "r") as f:
+            data = json.load(f)
 
-    # Parse "Failed attributes:" line which lists all failures
-    failed_attrs_pattern = r"ERROR:nix_fast_build:Failed attributes: (.+)"
-    for match in re.finditer(failed_attrs_pattern, build_log):
-        failed_attrs_line = match.group(1)
-        # Split by spaces and extract each .#checks.x86_64-linux."version" pattern
-        attr_pattern = r'\.#checks\.([^"]*"[^"]*"|\S+)'
-        for attr_match in re.finditer(attr_pattern, failed_attrs_line):
-            attr_name = attr_match.group(1)
-            # Convert x86_64-linux."3.5.1" to checks.x86_64-linux.3.5.1
-            check_name = f"checks.{attr_name}".replace('"', "")
-            failed_checks.add(check_name)
+        for result in data.get("results", []):
+            if result.get("type") == "BUILD":
+                attr = result.get("attr", "")
+                success = result.get("success", False)
 
-    # Parse building lines to identify potential successes
-    building_pattern = r"^\s*building\s+([^\s]+)"
-    for line in build_log.split("\n"):
-        match = re.match(building_pattern, line)
-        if match:
-            check_name = match.group(1)
-            # Skip derivation paths
-            if check_name.startswith(("/nix/store/", '"/nix/store/', "'/nix/store/")):
-                continue
-            # Convert format
-            if not check_name.startswith("checks."):
-                check_name = re.sub(r"\.", ".checks.", check_name, count=1)
-            check_name = check_name.replace('"', "")
-            potential_success.add(check_name)
+                # Convert attr format to checks.system.version
+                # e.g., "x86_64-linux.\"3.5.1\"" -> "checks.x86_64-linux.3.5.1"
+                check_name = f"checks.{attr}".replace('"', "")
 
-    # Only consider successes that aren't in the failed list
-    successful_checks = potential_success - failed_checks
+                if success:
+                    successful_checks.add(check_name)
+                else:
+                    failed_checks.add(check_name)
+
+    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+        print(f"Error parsing result file {result_file}: {e}", file=sys.stderr)
+        return set(), set()
 
     return successful_checks, failed_checks
 
@@ -126,8 +109,8 @@ def filter_valid_checks(checks: Set[str]) -> List[str]:
     return sorted(normalized, key=lambda x: x.lower())
 
 
-def run_nix_fast_build(json_output: bool) -> str:
-    """Run nix-fast-build and return the output while streaming to stderr."""
+def run_nix_fast_build(json_output: bool, result_file: str) -> bool:
+    """Run nix-fast-build with result file output and return success status."""
     cmd = [
         "devenv",
         "shell",
@@ -136,6 +119,8 @@ def run_nix_fast_build(json_output: bool) -> str:
         "nix-fast-build",
         "--flake=.#checks",
         "--no-link",
+        "--result-format=json",
+        f"--result-file={result_file}",
     ]
 
     # Add --no-nom flag for CI or JSON mode
@@ -146,7 +131,7 @@ def run_nix_fast_build(json_output: bool) -> str:
     print("================================", file=sys.stderr)
 
     try:
-        # Stream output in real-time while capturing it
+        # Stream output in real-time
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
@@ -156,18 +141,16 @@ def run_nix_fast_build(json_output: bool) -> str:
             universal_newlines=True,
         )
 
-        output_lines = []
         for line in process.stdout:
             # Stream to stderr for real-time visibility
             print(line, file=sys.stderr, end="")
-            output_lines.append(line)
 
-        process.wait()
-        return "".join(output_lines)
+        return_code = process.wait()
+        return return_code == 0
 
     except Exception as e:
         print(f"Error running nix-fast-build: {e}", file=sys.stderr)
-        return ""
+        return False
 
 
 def generate_json_output(successful: List[str], failed: List[str]) -> str:
@@ -282,35 +265,52 @@ def main():
 
     colors = Colors(enabled=not args.json)
 
-    # Run nix-fast-build
-    build_output = run_nix_fast_build(args.json)
+    # Create temporary result file
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", delete=False
+    ) as temp_file:
+        result_file = temp_file.name
 
-    # Parse the output
-    successful_checks, failed_checks = parse_build_output(build_output)
+    try:
+        # Run nix-fast-build with result file
+        run_nix_fast_build(args.json, result_file)
 
-    # Always enumerate all checks to get the complete picture (including cached builds)
-    if not args.json:
-        print("Enumerating all checks to account for cached builds...", file=sys.stderr)
+        # Parse the results from the JSON file
+        successful_checks, failed_checks = parse_build_results(result_file)
 
-    all_checks = get_all_checks()
-    all_checks_set = set(all_checks)
+        # Always enumerate all checks to get the complete picture (including cached builds)
+        if not args.json:
+            print(
+                "Enumerating all checks to account for cached builds...",
+                file=sys.stderr,
+            )
 
-    # Any check that wasn't explicitly failed must be successful (built or cached)
-    complete_successful = (all_checks_set - failed_checks) | successful_checks
+        all_checks = get_all_checks()
+        all_checks_set = set(all_checks)
 
-    # Filter and sort results
-    successful = filter_valid_checks(complete_successful)
-    failed = filter_valid_checks(failed_checks)
+        # Any check that wasn't explicitly failed must be successful (built or cached)
+        complete_successful = all_checks_set - failed_checks
 
-    # Generate output
-    if args.json:
-        print(generate_json_output(successful, failed))
-    else:
-        generate_human_output(successful, failed, colors)
-        generate_github_summary(successful, failed)
+        # Filter and sort results
+        successful = filter_valid_checks(complete_successful)
+        failed = filter_valid_checks(failed_checks)
 
-    # Exit with appropriate code
-    sys.exit(0 if not failed else 1)
+        # Generate output
+        if args.json:
+            print(generate_json_output(successful, failed))
+        else:
+            generate_human_output(successful, failed, colors)
+            generate_github_summary(successful, failed)
+
+        # Exit with appropriate code
+        sys.exit(0 if not failed else 1)
+
+    finally:
+        # Clean up temporary file
+        try:
+            os.unlink(result_file)
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":
