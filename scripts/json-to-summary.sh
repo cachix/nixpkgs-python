@@ -43,8 +43,8 @@ else
     TIMESTAMP=$(echo "$JSON_INPUT" | jq -r '.timestamp // ""' 2>/dev/null)
 fi
 
-# Colors for terminal output (only in non-markdown mode)
-if [ "$MARKDOWN_MODE" = false ]; then
+# Colors for terminal output (disabled in CI or markdown mode)
+if [ "$MARKDOWN_MODE" = false ] && [ -z "${CI:-}" ]; then
     RED='\033[0;31m'
     GREEN='\033[0;32m'
     YELLOW='\033[1;33m'
