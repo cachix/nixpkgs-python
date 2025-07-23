@@ -60,18 +60,18 @@ if [ "$MARKDOWN_MODE" = true ]; then
     # Markdown output
     echo "## Nix Flake Check Summary"
     echo ""
-    echo "_Generated at: ${TIMESTAMP}_"
+    echo "_Generated at: ${TIMESTAMP:-}_"
     echo ""
     echo "| Status | Count |"
     echo "|--------|-------|"
-    echo "| Total | $TOTAL |"
-    echo "| ✅ Successful | $SUCCESS_COUNT |"
-    echo "| ❌ Failed | $FAILED_COUNT |"
+    echo "| Total | ${TOTAL:-0} |"
+    echo "| ✅ Successful | ${SUCCESS_COUNT:-0} |"
+    echo "| ❌ Failed | ${FAILED_COUNT:-0} |"
     echo ""
 
-    if [ "$SUCCESS_COUNT" -gt 0 ]; then
+    if [ "${SUCCESS_COUNT:-0}" -gt 0 ]; then
         echo "### ✅ Successful builds"
-        if [ "$SUCCESS_COUNT" -le 50 ]; then
+        if [ "${SUCCESS_COUNT:-0}" -le 50 ]; then
             echo "<details>"
             echo "<summary>Click to expand</summary>"
             echo ""
@@ -88,12 +88,12 @@ if [ "$MARKDOWN_MODE" = true ]; then
             echo ""
             echo "</details>"
         else
-            echo "All $SUCCESS_COUNT checks passed successfully."
+            echo "All ${SUCCESS_COUNT:-0} checks passed successfully."
         fi
         echo ""
     fi
 
-    if [ "$FAILED_COUNT" -gt 0 ]; then
+    if [ "${FAILED_COUNT:-0}" -gt 0 ]; then
         echo "### ❌ Failed builds"
         echo "<details open>"
         echo "<summary>Click to expand</summary>"
@@ -118,14 +118,14 @@ else
     echo "Build Summary"
     echo "================================"
     echo ""
-    echo "Generated at: $TIMESTAMP"
+    echo "Generated at: ${TIMESTAMP:-}"
     echo ""
-    echo "Total checks: $TOTAL"
-    printf '%s✓ Successful: %s%s\n' "$GREEN" "$SUCCESS_COUNT" "$NC"
-    printf '%s✗ Failed: %s%s\n' "$RED" "$FAILED_COUNT" "$NC"
+    echo "Total checks: ${TOTAL:-0}"
+    printf '%s✓ Successful: %s%s\n' "$GREEN" "${SUCCESS_COUNT:-0}" "$NC"
+    printf '%s✗ Failed: %s%s\n' "$RED" "${FAILED_COUNT:-0}" "$NC"
     echo ""
     
-    if [ "$SUCCESS_COUNT" -gt 0 ]; then
+    if [ "${SUCCESS_COUNT:-0}" -gt 0 ]; then
         printf '%sSuccessful builds:%s\n' "$GREEN" "$NC"
         if command -v jq &> /dev/null; then
             echo "$JSON_INPUT" | jq -r '.successful_checks[]' | sort -V | while read -r check; do
@@ -142,7 +142,7 @@ else
         echo ""
     fi
 
-    if [ "$FAILED_COUNT" -gt 0 ]; then
+    if [ "${FAILED_COUNT:-0}" -gt 0 ]; then
         printf '%sFailed builds:%s\n' "$RED" "$NC"
         if command -v jq &> /dev/null; then
             echo "$JSON_INPUT" | jq -r '.failed_checks[]' | sort -V | while read -r check; do
