@@ -25,10 +25,5 @@
       enable = true;
       after = [ "ruff" ];
     };
-    shellcheck.enable = true;
-    shfmt = {
-      enable = true;
-      after = [ "shellcheck" ];
-    };
   };
 }
