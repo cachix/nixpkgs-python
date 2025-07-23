@@ -14,7 +14,10 @@
       excludes = [ "versions.json" ];
     };
     ruff.enable = true;
-    ruff-format.enable = true;
+    ruff-format = {
+      enable = true;
+      after = [ "ruff" ];
+    };
     shellcheck.enable = true;
     shfmt = {
       enable = true;
