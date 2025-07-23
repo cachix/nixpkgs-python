@@ -19,55 +19,55 @@ jobs:
           - [self-hosted, linux, ARM64]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@f0fe604f8a612776892427721526b4c7cfb23aba # v31
-    - uses: cachix/cachix-action@v16
-      with:
-        name: nixpkgs-python
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@f0fe604f8a612776892427721526b4c7cfb23aba # v31
+      - uses: cachix/cachix-action@v16
+        with:
+          name: nixpkgs-python
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
-    - name: Install devenv
-      if: runner.os == 'macOS'
-      run: |
-        nix profile install --accept-flake-config github:cachix/devenv/latest
+      - name: Install devenv
+        if: runner.os == 'macOS'
+        run: |
+          nix profile install --accept-flake-config github:cachix/devenv/latest
 
-    - name: Check patch phase
-      continue-on-error: true
-      run: |
-        echo "Running patch phase checks..."
-        SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
-        echo "System: $SYSTEM"
-        nix build .#patchChecks.$SYSTEM.all -L --keep-going --accept-flake-config --show-trace --no-link
+      - name: Check patch phase
+        continue-on-error: true
+        run: |
+          echo "Running patch phase checks..."
+          SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
+          echo "System: $SYSTEM"
+          nix build .#patchChecks.$SYSTEM.all -L --keep-going --accept-flake-config --show-trace --no-link
 
-    - name: Run full build
-      id: build
-      run: |
-        # Run checks with JSON output using devenv shell
-        devenv shell --quiet -- './scripts/check-with-summary.sh --json' > build-results.json || BUILD_EXIT_CODE=$?
+      - name: Run full build
+        id: build
+        run: |
+          # Run checks with JSON output using devenv shell
+          devenv shell --quiet -- './scripts/check-with-summary.sh --json' > build-results.json || BUILD_EXIT_CODE=$?
 
-        # Generate human-readable summaries using devenv shell
-        devenv shell --quiet -- './scripts/json-to-summary.sh < build-results.json' > build-summary.txt || true
-        devenv shell --quiet -- './scripts/json-to-summary.sh --markdown < build-results.json' > build-summary.md || true
+          # Generate human-readable summaries using devenv shell
+          devenv shell --quiet -- './scripts/json-to-summary.sh < build-results.json' > build-summary.txt || true
+          devenv shell --quiet -- './scripts/json-to-summary.sh --markdown < build-results.json' > build-summary.md || true
 
-        # Add to GitHub Actions summary (job summary)
-        if [ -f build-summary.md ]; then
-          cat build-summary.md >> $GITHUB_STEP_SUMMARY
-        fi
+          # Add to GitHub Actions summary (job summary)
+          if [ -f build-summary.md ]; then
+            cat build-summary.md >> $GITHUB_STEP_SUMMARY
+          fi
 
-        # Also output to console for visibility (redirect to stderr)
-        echo "Build results:" >&2
-        cat build-summary.txt >&2
+          # Also output to console for visibility (redirect to stderr)
+          echo "Build results:" >&2
+          cat build-summary.txt >&2
 
-        # Exit with the original exit code
-        exit ${BUILD_EXIT_CODE:-0}
+          # Exit with the original exit code
+          exit ${BUILD_EXIT_CODE:-0}
 
-    - name: Upload build results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-results-${{ runner.os }}-${{ runner.arch }}
-        path: |
-          build-results.json
-          build-summary.txt
-          build-summary.md
-        retention-days: 7
+      - name: Upload build results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-results-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            build-results.json
+            build-summary.txt
+            build-summary.md
+          retention-days: 7

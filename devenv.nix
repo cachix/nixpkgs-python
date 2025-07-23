@@ -7,7 +7,10 @@
 
   git-hooks.hooks = {
     nixfmt-rfc-style.enable = true;
-    prettier.enable = true;
+    prettier = {
+      enable = true;
+      excludes = [ "versions.json" ];
+    };
     shellcheck.enable = true;
   };
 }

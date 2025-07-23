@@ -29,7 +29,7 @@ Using the following platforms:
 Create `devenv.nix`:
 
 ```nix
-{ pkgs, ... }: 
+{ pkgs, ... }:
 
 {
   languages.python.enable = true;
@@ -75,4 +75,3 @@ You can run this package ad-hoc using the following command:
 Or specify a minor version:
 
     $ nix shell github:cachix/nixpkgs-python#'"2.7.16"'
-
