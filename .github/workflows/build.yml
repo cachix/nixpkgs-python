@@ -47,11 +47,11 @@ jobs:
         id: build
         run: |
           # Run checks with JSON output using devenv shell
-          devenv shell --quiet -- './scripts/check-with-summary.py --json' > build-results.json || BUILD_EXIT_CODE=$?
+          devenv shell --quiet -- 'nixpkgs-python-check --json' > build-results.json || BUILD_EXIT_CODE=$?
 
           # Generate human-readable summaries using devenv shell
-          devenv shell --quiet -- './scripts/json-to-summary.py < build-results.json' > build-summary.txt || true
-          devenv shell --quiet -- './scripts/json-to-summary.py --markdown < build-results.json' > build-summary.md || true
+          devenv shell --quiet -- 'nixpkgs-python-summary < build-results.json' > build-summary.txt || true
+          devenv shell --quiet -- 'nixpkgs-python-summary --markdown < build-results.json' > build-summary.md || true
 
           # Add to GitHub Actions summary (job summary)
           if [ -f build-summary.md ]; then

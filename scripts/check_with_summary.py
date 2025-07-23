@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Run nix flake checks with nix-fast-build and generate summary output."""
 
 import argparse

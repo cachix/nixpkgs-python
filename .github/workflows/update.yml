@@ -22,7 +22,7 @@ jobs:
           extraPullNames: devenv
       - name: Install devenv.sh
         run: nix profile install github:cachix/devenv/latest
-      - run: devenv shell -- python ./scripts/update.py
+      - run: devenv shell -- nixpkgs-python-update
       - run: nix flake check --keep-going --accept-flake-config --show-trace
       - name: Create Pull Request
         id: create-pull-request
@@ -36,7 +36,7 @@ jobs:
             This is the result of running:
 
             ```
-            devenv shell -- python ./scripts/update.py
+            devenv shell -- nixpkgs-python-update
             ```
           delete-branch: true
       - if: ${{ steps.create-pull-request.outputs.pull-request-operation == 'created' }}

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Convert JSON output from check-with-summary.py to human-readable format."""
 
 import argparse
