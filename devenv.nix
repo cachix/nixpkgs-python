@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  languages.python.enable = true;
+
   packages = [
     pkgs.jq
     pkgs.nix-fast-build
@@ -11,6 +13,8 @@
       enable = true;
       excludes = [ "versions.json" ];
     };
+    ruff.enable = true;
+    ruff-format.enable = true;
     shellcheck.enable = true;
     shfmt = {
       enable = true;
