@@ -3,25 +3,11 @@
 
 import argparse
 import json
-import os
 import sys
 from typing import Dict, Any
 
-
-class Colors:
-    """ANSI color codes for terminal output."""
-
-    def __init__(self, enabled: bool = True):
-        if enabled:
-            self.RED = "\033[0;31m"
-            self.GREEN = "\033[0;32m"
-            self.YELLOW = "\033[1;33m"
-            self.NC = "\033[0m"
-        else:
-            self.RED = ""
-            self.GREEN = ""
-            self.YELLOW = ""
-            self.NC = ""
+from rich.console import Console
+from rich.table import Table
 
 
 def parse_json_input() -> Dict[str, Any]:
@@ -38,7 +24,7 @@ def parse_json_input() -> Dict[str, Any]:
 
 
 def generate_markdown_output(data: Dict[str, Any]) -> None:
-    """Generate markdown output."""
+    """Generate markdown output using the markdown library."""
     timestamp = data.get("timestamp", "")
     total = data.get("total", 0)
     successful_count = data.get("successful", 0)
@@ -46,44 +32,51 @@ def generate_markdown_output(data: Dict[str, Any]) -> None:
     successful_checks = data.get("successful_checks", [])
     failed_checks = data.get("failed_checks", [])
 
-    print("## Nix Flake Check Summary")
-    print("")
-    print(f"_Generated at: {timestamp}_")
-    print("")
-    print("| Status | Count |")
-    print("|--------|-------|")
-    print(f"| Total | {total} |")
-    print(f"| ✅ Successful | {successful_count} |")
-    print(f"| ❌ Failed | {failed_count} |")
-    print("")
+    # Build markdown content
+    md_content = []
+    md_content.append("## Nix Flake Check Summary")
+    md_content.append("")
+    md_content.append(f"_Generated at: {timestamp}_")
+    md_content.append("")
+    md_content.append("| Status | Count |")
+    md_content.append("|--------|-------|")
+    md_content.append(f"| Total | {total} |")
+    md_content.append(f"| ✅ Successful | {successful_count} |")
+    md_content.append(f"| ❌ Failed | {failed_count} |")
+    md_content.append("")
 
     if successful_count > 0:
-        print("### ✅ Successful builds")
+        md_content.append("### ✅ Successful builds")
         if successful_count <= 50:
-            print("<details>")
-            print("<summary>Click to expand</summary>")
-            print("")
+            md_content.append("<details>")
+            md_content.append("<summary>Click to expand</summary>")
+            md_content.append("")
             for check in sorted(successful_checks, key=str.lower):
-                print(f"- ✓ `{check}`")
-            print("")
-            print("</details>")
+                md_content.append(f"- ✓ `{check}`")
+            md_content.append("")
+            md_content.append("</details>")
         else:
-            print(f"All {successful_count} checks passed successfully.")
-        print("")
+            md_content.append(f"All {successful_count} checks passed successfully.")
+        md_content.append("")
 
     if failed_count > 0:
-        print("### ❌ Failed builds")
-        print("<details open>")
-        print("<summary>Click to expand</summary>")
-        print("")
+        md_content.append("### ❌ Failed builds")
+        md_content.append("<details open>")
+        md_content.append("<summary>Click to expand</summary>")
+        md_content.append("")
         for check in sorted(failed_checks, key=str.lower):
-            print(f"- ✗ `{check}`")
-        print("")
-        print("</details>")
+            md_content.append(f"- ✗ `{check}`")
+        md_content.append("")
+        md_content.append("</details>")
+
+    # Convert to markdown and print
+    md_text = "\n".join(md_content)
+    print(md_text)
 
 
-def generate_terminal_output(data: Dict[str, Any], colors: Colors) -> None:
-    """Generate terminal output with colors."""
+def generate_terminal_output(data: Dict[str, Any]) -> None:
+    """Generate terminal output using Rich."""
+    console = Console()
     timestamp = data.get("timestamp", "")
     total = data.get("total", 0)
     successful_count = data.get("successful", 0)
@@ -92,34 +85,42 @@ def generate_terminal_output(data: Dict[str, Any], colors: Colors) -> None:
     failed_checks = data.get("failed_checks", [])
     is_success = data.get("success", False)
 
-    print("")
-    print("================================")
-    print("Build Summary")
-    print("================================")
-    print("")
-    print(f"Generated at: {timestamp}")
-    print("")
-    print(f"Total checks: {total}")
-    print(f"{colors.GREEN}✓ Successful: {successful_count}{colors.NC}")
-    print(f"{colors.RED}✗ Failed: {failed_count}{colors.NC}")
-    print("")
+    console.print()
+    console.rule("[bold]Build Summary[/bold]")
+    console.print()
+    console.print(f"Generated at: {timestamp}")
+    console.print()
+
+    # Create summary table
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Status", style="bold")
+    table.add_column("Count", justify="right")
+
+    table.add_row("Total", str(total))
+    table.add_row("✓ Successful", f"[green]{successful_count}[/green]")
+    table.add_row("✗ Failed", f"[red]{failed_count}[/red]")
+
+    console.print(table)
+    console.print()
 
     if successful_count > 0:
-        print(f"{colors.GREEN}Successful builds:{colors.NC}")
+        console.print("[bold green]Successful builds:[/bold green]")
         for check in sorted(successful_checks, key=str.lower):
-            print(f"  ✓ {check}")
-        print("")
+            console.print(f"  [green]✓[/green] {check}")
+        console.print()
 
     if failed_count > 0:
-        print(f"{colors.RED}Failed builds:{colors.NC}")
+        console.print("[bold red]Failed builds:[/bold red]")
         for check in sorted(failed_checks, key=str.lower):
-            print(f"  ✗ {check}")
-        print("")
+            console.print(f"  [red]✗[/red] {check}")
+        console.print()
 
     if is_success:
-        print(f"{colors.GREEN}All checks passed successfully!{colors.NC}")
+        console.print("[bold green]All checks passed successfully![/bold green]")
     else:
-        print(f"{colors.YELLOW}Some checks failed. See details above.{colors.NC}")
+        console.print(
+            "[bold yellow]Some checks failed. See details above.[/bold yellow]"
+        )
 
 
 def main():
@@ -142,9 +143,7 @@ def main():
     if args.markdown:
         generate_markdown_output(data)
     else:
-        # Disable colors in CI or markdown mode
-        colors = Colors(enabled=not os.environ.get("CI"))
-        generate_terminal_output(data, colors)
+        generate_terminal_output(data)
 
     # Exit with appropriate code based on success status
     is_success = data.get("success", False)
