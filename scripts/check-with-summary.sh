@@ -69,7 +69,7 @@ run_nix_command() {
 # The --no-link flag prevents creating result symlinks
 if [ "$JSON_OUTPUT" = true ]; then
     # In JSON mode, suppress all output
-    run_nix_command nix run nixpkgs#nix-fast-build -- \
+    run_nix_command nix-fast-build \
         --flake .#checks \
         $NOM_FLAG \
         --eval-workers 4 \
@@ -77,7 +77,7 @@ if [ "$JSON_OUTPUT" = true ]; then
         > "$BUILD_LOG" 2>&1
 else
     # In normal mode, show output
-    run_nix_command nix run nixpkgs#nix-fast-build -- \
+    run_nix_command nix-fast-build \
         --flake .#checks \
         $NOM_FLAG \
         --eval-workers 4 \
