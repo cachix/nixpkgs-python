@@ -116,14 +116,14 @@ if { [ ! -s "$SUCCESS_FILE" ] && [ ! -s "$FAILED_FILE" ]; } || { [ ! -s "$SUCCES
 	if [ "$JSON_OUTPUT" = false ]; then
 		echo "Enumerating all checks to account for cached builds..." >&2
 	fi
-	for system in $(nix eval --impure --raw --expr 'builtins.concatStringsSep " " (builtins.attrNames (builtins.getFlake (toString ./.)).checks)'); do
-		for check in $(nix eval --impure --raw --expr "builtins.concatStringsSep \" \" (builtins.attrNames (builtins.getFlake (toString ./.)).checks.${system})" 2>/dev/null || echo ""); do
-			check_name="checks.${system}.${check}"
-			# If this check is not in the failed list, it must be successful (cached or built)
-			if ! grep -qF "$check_name" "$FAILED_FILE" 2>/dev/null; then
-				echo "$check_name" >>"$SUCCESS_FILE"
-			fi
-		done
+	# Only enumerate checks for the current system
+	CURRENT_SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
+	for check in $(nix eval --impure --raw --expr "builtins.concatStringsSep \" \" (builtins.attrNames (builtins.getFlake (toString ./.)).checks.${CURRENT_SYSTEM})" 2>/dev/null || echo ""); do
+		check_name="checks.${CURRENT_SYSTEM}.${check}"
+		# If this check is not in the failed list, it must be successful (cached or built)
+		if ! grep -qF "$check_name" "$FAILED_FILE" 2>/dev/null; then
+			echo "$check_name" >>"$SUCCESS_FILE"
+		fi
 	done
 fi
 
