@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euo
 
 # Parse command line arguments
 JSON_OUTPUT=false
@@ -42,10 +42,8 @@ trap 'rm -f "$SUCCESS_FILE" "$FAILED_FILE" "$SUMMARY_FILE" "$BUILD_LOG"' EXIT
 EXIT_CODE=0
 
 # Only show progress in non-JSON mode
-if [ "$JSON_OUTPUT" = false ]; then
-    echo "Running nix flake checks with nix-fast-build..." >&2
-    echo "================================" >&2
-fi
+printf "Running nix flake checks with nix-fast-build...\n"
+printf "================================\n"
 
 # Run nix-fast-build on all checks
 # Use nom formatter for interactive use, --no-nom in CI or JSON mode for cleaner parsing
@@ -54,42 +52,16 @@ if [ -n "${CI:-}" ] || [ "$JSON_OUTPUT" = true ]; then
     NOM_FLAG="--no-nom"
 fi
 
-# Function to run nix commands - use devenv shell if available
-run_nix_command() {
-    local cmd="$1"
-    shift
-    if command -v devenv &> /dev/null && [ -f devenv.nix ]; then
-        devenv shell --quiet -- "$cmd" "$@"
-    else
-        "$cmd" "$@"
-    fi
-}
-
 # The --eval-workers flag controls parallel evaluation
 # The --no-link flag prevents creating result symlinks
-if [ "$JSON_OUTPUT" = true ]; then
-    # In JSON mode, still show output but capture to log
-    run_nix_command nix-fast-build \
-        --flake .#checks \
-        $NOM_FLAG \
-        --eval-workers 4 \
-        --no-link \
-        2>&1 | tee "$BUILD_LOG"
-else
-    # In normal mode, show output
-    run_nix_command nix-fast-build \
-        --flake .#checks \
-        $NOM_FLAG \
-        --eval-workers 4 \
-        --no-link \
-        2>&1 | tee "$BUILD_LOG"
-fi
+devenv shell --quiet -- \
+    nix-fast-build \
+    --flake .#checks \
+    $NOM_FLAG \
+    --eval-workers 4 \
+    --no-link 2>&1 | tee "$BUILD_LOG"
 
-# Parse the nix-fast-build output
-if [ "$JSON_OUTPUT" = false ]; then
-    echo "" >&2
-    echo "Analyzing results..." >&2
-fi
+printf ""
 
 # Parse different output formats from nix-fast-build
 # Look for error messages like:
@@ -144,8 +116,8 @@ if { [ ! -s "$SUCCESS_FILE" ] && [ ! -s "$FAILED_FILE" ]; } || { [ ! -s "$SUCCES
     if [ "$JSON_OUTPUT" = false ]; then
         echo "Enumerating all checks to account for cached builds..." >&2
     fi
-    for system in $(run_nix_command nix eval --impure --raw --expr 'builtins.concatStringsSep " " (builtins.attrNames (builtins.getFlake (toString ./.)).checks)'); do
-        for check in $(run_nix_command nix eval --impure --raw --expr "builtins.concatStringsSep \" \" (builtins.attrNames (builtins.getFlake (toString ./.)).checks.${system})" 2>/dev/null || echo ""); do
+    for system in $(nix eval --impure --raw --expr 'builtins.concatStringsSep " " (builtins.attrNames (builtins.getFlake (toString ./.)).checks)'); do
+        for check in $(nix eval --impure --raw --expr "builtins.concatStringsSep \" \" (builtins.attrNames (builtins.getFlake (toString ./.)).checks.${system})" 2>/dev/null || echo ""); do
             check_name="checks.${system}.${check}"
             # If this check is not in the failed list, it must be successful (cached or built)
             if ! grep -qF "$check_name" "$FAILED_FILE" 2>/dev/null; then
@@ -164,16 +136,16 @@ TOTAL_COUNT=$((SUCCESS_COUNT + FAILED_COUNT))
 if [ "$JSON_OUTPUT" = true ]; then
     # Generate JSON output
     TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-    
+
     # Read checks into arrays
     SUCCESS_ARRAY=$(sort -V "$SUCCESS_FILE" 2>/dev/null | while IFS= read -r check; do
         [ -n "$check" ] && printf '"%s",' "$check"
     done | sed 's/,$//')
-    
+
     FAILED_ARRAY=$(sort -V "$FAILED_FILE" 2>/dev/null | while IFS= read -r check; do
         [ -n "$check" ] && printf '"%s",' "$check"
     done | sed 's/,$//')
-    
+
     # Output JSON
     cat <<EOF
 {
@@ -186,7 +158,7 @@ if [ "$JSON_OUTPUT" = true ]; then
   "failed_checks": [${FAILED_ARRAY}]
 }
 EOF
-    
+
     EXIT_CODE=$([ "$FAILED_COUNT" -eq 0 ] && echo 0 || echo 1)
 else
     # Generate human-readable summary to stderr
@@ -200,7 +172,7 @@ else
         echo -e "${GREEN}✓ Successful: $SUCCESS_COUNT${NC}"
         echo -e "${RED}✗ Failed: $FAILED_COUNT${NC}"
         echo ""
-        
+
         if [ "$SUCCESS_COUNT" -gt 0 ]; then
             echo -e "${GREEN}Successful builds:${NC}"
             while IFS= read -r check; do
@@ -208,7 +180,7 @@ else
             done < "$SUCCESS_FILE" | sort -V
             echo ""
         fi
-        
+
         if [ "$FAILED_COUNT" -gt 0 ]; then
             echo -e "${RED}Failed builds:${NC}"
             while IFS= read -r check; do
@@ -216,7 +188,7 @@ else
             done < "$FAILED_FILE" | sort -V
             echo ""
         fi
-        
+
         if [ "$FAILED_COUNT" -eq 0 ]; then
             echo -e "${GREEN}All checks passed successfully!${NC}"
             EXIT_CODE=0
@@ -238,7 +210,7 @@ if [ -n "${GITHUB_STEP_SUMMARY:-}" ] && [ "$JSON_OUTPUT" = false ]; then
         echo "| ✅ Successful | $SUCCESS_COUNT |"
         echo "| ❌ Failed | $FAILED_COUNT |"
         echo ""
-        
+
         if [ "$SUCCESS_COUNT" -gt 0 ] && [ "$SUCCESS_COUNT" -le 50 ]; then
             echo "### ✅ Successful builds"
             echo "<details>"
@@ -255,7 +227,7 @@ if [ -n "${GITHUB_STEP_SUMMARY:-}" ] && [ "$JSON_OUTPUT" = false ]; then
             echo "All $SUCCESS_COUNT checks passed successfully."
             echo ""
         fi
-        
+
         if [ "$FAILED_COUNT" -gt 0 ]; then
             echo "### ❌ Failed builds"
             echo "<details open>"
