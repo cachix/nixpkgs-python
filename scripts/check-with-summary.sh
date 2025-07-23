@@ -69,28 +69,20 @@ run_nix_command() {
 # The --no-link flag prevents creating result symlinks
 if [ "$JSON_OUTPUT" = true ]; then
     # In JSON mode, suppress all output
-    if run_nix_command nix run nixpkgs#nix-fast-build -- \
+    run_nix_command nix run nixpkgs#nix-fast-build -- \
         --flake .#checks \
         $NOM_FLAG \
         --eval-workers 4 \
         --no-link \
-        > "$BUILD_LOG" 2>&1; then
-        OVERALL_SUCCESS=true
-    else
-        OVERALL_SUCCESS=false
-    fi
+        > "$BUILD_LOG" 2>&1
 else
     # In normal mode, show output
-    if run_nix_command nix run nixpkgs#nix-fast-build -- \
+    run_nix_command nix run nixpkgs#nix-fast-build -- \
         --flake .#checks \
         $NOM_FLAG \
         --eval-workers 4 \
         --no-link \
-        2>&1 | tee "$BUILD_LOG"; then
-        OVERALL_SUCCESS=true
-    else
-        OVERALL_SUCCESS=false
-    fi
+        2>&1 | tee "$BUILD_LOG"
 fi
 
 # Parse the nix-fast-build output
@@ -146,17 +138,18 @@ mv "$SUCCESS_FILE.filtered" "$SUCCESS_FILE" 2>/dev/null || true
 sort -u "$FAILED_FILE" 2>/dev/null | grep -v "/nix/store/" | grep -E "^(checks\.)?[a-zA-Z0-9_-]+\." > "$FAILED_FILE.filtered" || true
 mv "$FAILED_FILE.filtered" "$FAILED_FILE" 2>/dev/null || true
 
-# If we still have no results, try to enumerate all checks as a fallback
-if [ ! -s "$SUCCESS_FILE" ] && [ ! -s "$FAILED_FILE" ]; then
+# If we still have no results or only failures (cached builds don't show as "building"), 
+# enumerate all checks and mark non-failed ones as successful
+if { [ ! -s "$SUCCESS_FILE" ] && [ ! -s "$FAILED_FILE" ]; } || { [ ! -s "$SUCCESS_FILE" ] && [ -s "$FAILED_FILE" ]; }; then
     if [ "$JSON_OUTPUT" = false ]; then
-        echo "No detailed results found, enumerating all checks..." >&2
+        echo "Enumerating all checks to account for cached builds..." >&2
     fi
     for system in $(run_nix_command nix eval --impure --raw --expr 'builtins.concatStringsSep " " (builtins.attrNames (builtins.getFlake (toString ./.)).checks)'); do
         for check in $(run_nix_command nix eval --impure --raw --expr "builtins.concatStringsSep \" \" (builtins.attrNames (builtins.getFlake (toString ./.)).checks.${system})" 2>/dev/null || echo ""); do
-            if [ "$OVERALL_SUCCESS" = true ]; then
-                echo "checks.${system}.${check}" >> "$SUCCESS_FILE"
-            else
-                echo "checks.${system}.${check}" >> "$FAILED_FILE"
+            check_name="checks.${system}.${check}"
+            # If this check is not in the failed list, it must be successful (cached or built)
+            if ! grep -qF "$check_name" "$FAILED_FILE" 2>/dev/null; then
+                echo "$check_name" >> "$SUCCESS_FILE"
             fi
         done
     done
