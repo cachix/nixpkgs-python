@@ -118,7 +118,7 @@ def run_nix_fast_build(json_output: bool) -> str:
 
     # Add --no-nom flag for CI or JSON mode
     if os.environ.get("CI") or json_output:
-        cmd.insert(-4, "--no-nom")
+        cmd.append("--no-nom")
 
     print("Running nix flake checks with nix-fast-build...", file=sys.stderr)
     print("================================", file=sys.stderr)
