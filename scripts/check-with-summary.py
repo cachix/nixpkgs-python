@@ -7,7 +7,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Set, Tuple
 
 
@@ -112,8 +112,7 @@ def run_nix_fast_build(json_output: bool) -> str:
         "--quiet",
         "--",
         "nix-fast-build",
-        "--flake",
-        ".#checks",
+        "--flake=.#checks",
         "--eval-workers",
         "4",
         "--no-link",
@@ -153,7 +152,7 @@ def run_nix_fast_build(json_output: bool) -> str:
 
 def generate_json_output(successful: List[str], failed: List[str]) -> str:
     """Generate JSON output format."""
-    timestamp = datetime.utcnow().isoformat() + "Z"
+    timestamp = datetime.now(timezone.utc).isoformat()
     total = len(successful) + len(failed)
 
     return json.dumps(
