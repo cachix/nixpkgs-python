@@ -31,14 +31,27 @@ def parse_build_output(build_log: str) -> Tuple[Set[str], Set[str]]:
     failed_checks = set()
     potential_success = set()
 
-    # Parse error messages
+    # Parse error messages - both individual BuildFailure and Failed attributes list
     error_pattern = r"ERROR:nix_fast_build:BuildFailure for ([^:]+):"
     for match in re.finditer(error_pattern, build_log):
         check_name = match.group(1)
         # Convert format like x86_64-linux."3.5.1" to checks.x86_64-linux.3.5.1
-        check_name = re.sub(r"\.", ".checks.", check_name, count=1)
+        if not check_name.startswith("checks."):
+            check_name = re.sub(r"\.", ".checks.", check_name, count=1)
         check_name = check_name.replace('"', "")
         failed_checks.add(check_name)
+
+    # Parse "Failed attributes:" line which lists all failures
+    failed_attrs_pattern = r"ERROR:nix_fast_build:Failed attributes: (.+)"
+    for match in re.finditer(failed_attrs_pattern, build_log):
+        failed_attrs_line = match.group(1)
+        # Split by spaces and extract each .#checks.x86_64-linux."version" pattern
+        attr_pattern = r'\.#checks\.([^"]*"[^"]*"|\S+)'
+        for attr_match in re.finditer(attr_pattern, failed_attrs_line):
+            attr_name = attr_match.group(1)
+            # Convert x86_64-linux."3.5.1" to checks.x86_64-linux.3.5.1
+            check_name = f"checks.{attr_name}".replace('"', "")
+            failed_checks.add(check_name)
 
     # Parse building lines to identify potential successes
     building_pattern = r"^\s*building\s+([^\s]+)"
@@ -50,7 +63,8 @@ def parse_build_output(build_log: str) -> Tuple[Set[str], Set[str]]:
             if check_name.startswith(("/nix/store/", '"/nix/store/', "'/nix/store/")):
                 continue
             # Convert format
-            check_name = re.sub(r"\.", ".checks.", check_name, count=1)
+            if not check_name.startswith("checks."):
+                check_name = re.sub(r"\.", ".checks.", check_name, count=1)
             check_name = check_name.replace('"', "")
             potential_success.add(check_name)
 
@@ -94,13 +108,22 @@ def get_all_checks() -> List[str]:
 def filter_valid_checks(checks: Set[str]) -> List[str]:
     """Filter out invalid check names and remove duplicates."""
     valid_pattern = r"^(checks\.)?[a-zA-Z0-9_-]+\."
-    filtered = []
+    normalized = set()
 
     for check in checks:
         if "/nix/store/" not in check and re.match(valid_pattern, check):
-            filtered.append(check)
+            # Normalize all check names to start with "checks."
+            if not check.startswith("checks."):
+                # Convert x86_64-linux.checks.foo to checks.x86_64-linux.foo
+                parts = check.split(".", 2)
+                if len(parts) >= 3 and parts[1] == "checks":
+                    check = f"checks.{parts[0]}.{parts[2]}"
+                else:
+                    # Convert x86_64-linux.foo to checks.x86_64-linux.foo
+                    check = re.sub(r"\.", ".checks.", check, count=1)
+            normalized.add(check)
 
-    return sorted(set(filtered), key=lambda x: x.lower())
+    return sorted(normalized, key=lambda x: x.lower())
 
 
 def run_nix_fast_build(json_output: bool) -> str:
