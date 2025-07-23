@@ -110,7 +110,7 @@ grep -E "^[[:space:]]*building[[:space:]]" "$BUILD_LOG" | while IFS= read -r lin
     if [[ "$line" =~ building[[:space:]]([^[:space:]]+) ]]; then
         check_name="${BASH_REMATCH[1]}"
         # Skip if it looks like a derivation path
-        if [[ "$check_name" =~ ^['\"]?/nix/store/ ]]; then
+        if [[ "$check_name" =~ ^[\"\']/nix/store/ ]] || [[ "$check_name" =~ ^/nix/store/ ]]; then
             continue
         fi
         # Convert format like x86_64-linux."3.5.1" to checks.x86_64-linux.3.5.1

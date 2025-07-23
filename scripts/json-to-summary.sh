@@ -36,11 +36,11 @@ if ! command -v jq &> /dev/null; then
     TIMESTAMP=$(echo "$JSON_INPUT" | grep -o '"timestamp":[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/')
 else
     # Use jq for proper JSON parsing (suppress stderr to avoid devenv noise)
-    TOTAL=$(echo "$JSON_INPUT" | jq -r '.total // 0' 2>/dev/null || echo "0")
-    SUCCESS_COUNT=$(echo "$JSON_INPUT" | jq -r '.successful // 0' 2>/dev/null || echo "0")
-    FAILED_COUNT=$(echo "$JSON_INPUT" | jq -r '.failed // 0' 2>/dev/null || echo "0")
-    SUCCESS=$(echo "$JSON_INPUT" | jq -r '.success // false' 2>/dev/null || echo "false")
-    TIMESTAMP=$(echo "$JSON_INPUT" | jq -r '.timestamp // ""' 2>/dev/null || echo "")
+    TOTAL=$(echo "$JSON_INPUT" | jq -r '.total // 0' 2>/dev/null)
+    SUCCESS_COUNT=$(echo "$JSON_INPUT" | jq -r '.successful // 0' 2>/dev/null)
+    FAILED_COUNT=$(echo "$JSON_INPUT" | jq -r '.failed // 0' 2>/dev/null)
+    SUCCESS=$(echo "$JSON_INPUT" | jq -r '.success // false' 2>/dev/null)
+    TIMESTAMP=$(echo "$JSON_INPUT" | jq -r '.timestamp // ""' 2>/dev/null)
 fi
 
 # Colors for terminal output (only in non-markdown mode)
