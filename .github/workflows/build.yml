@@ -58,8 +58,16 @@ jobs:
           echo "Build results:" >&2
           cat build-summary.txt >&2
 
-          # Exit with the original exit code
-          exit ${BUILD_EXIT_CODE:-0}
+          # Check if we have valid JSON output to distinguish between script failures and build failures
+          if [ ! -f build-results.json ] || ! jq empty build-results.json 2>/dev/null; then
+            echo "Error: Script failed to produce valid JSON output - this indicates a script/infrastructure error" >&2
+            exit ${BUILD_EXIT_CODE:-1}
+          fi
+
+          # If we have valid JSON, the script ran successfully even if some builds failed
+          # Don't fail the CI step for Python build failures
+          echo "Script completed successfully. Individual build failures are tracked in the summary." >&2
+          exit 0
 
       - name: Upload build results
         if: always()
