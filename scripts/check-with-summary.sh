@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo
+set -eu
 
 # Parse command line arguments
 JSON_OUTPUT=false
@@ -41,9 +41,9 @@ trap 'rm -f "$SUCCESS_FILE" "$FAILED_FILE" "$SUMMARY_FILE" "$BUILD_LOG"' EXIT
 # Initialize exit code
 EXIT_CODE=0
 
-# Only show progress in non-JSON mode
-printf "Running nix flake checks with nix-fast-build...\n"
-printf "================================\n"
+# Show progress (always to stderr)
+printf "Running nix flake checks with nix-fast-build...\n" >&2
+printf "================================\n" >&2
 
 # Run nix-fast-build on all checks
 # Use nom formatter for interactive use, --no-nom in CI or JSON mode for cleaner parsing
@@ -59,9 +59,9 @@ devenv shell --quiet -- \
 	--flake .#checks \
 	$NOM_FLAG \
 	--eval-workers 4 \
-	--no-link 2>&1 | tee "$BUILD_LOG"
+	--no-link 2>&1 | tee "$BUILD_LOG" >&2
 
-printf ""
+printf "" >&2
 
 # Parse different output formats from nix-fast-build
 # Look for error messages like:
