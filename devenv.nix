@@ -12,5 +12,9 @@
       excludes = [ "versions.json" ];
     };
     shellcheck.enable = true;
+    shfmt = {
+      enable = true;
+      after = [ "shellcheck" ];
+    };
   };
 }
