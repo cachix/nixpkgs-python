@@ -29,7 +29,7 @@ SUMMARY_FILE=$(mktemp)
 BUILD_LOG=$(mktemp)
 
 # Cleanup on exit
-trap "rm -f $SUCCESS_FILE $FAILED_FILE $SUMMARY_FILE $BUILD_LOG" EXIT
+trap 'rm -f "$SUCCESS_FILE" "$FAILED_FILE" "$SUMMARY_FILE" "$BUILD_LOG"' EXIT
 
 # Initialize exit code
 EXIT_CODE=0
@@ -270,4 +270,4 @@ if [ -n "${GITHUB_STEP_SUMMARY:-}" ] && [ "$JSON_OUTPUT" = false ]; then
     } >> "$GITHUB_STEP_SUMMARY"
 fi
 
-exit $EXIT_CODE
+exit "$EXIT_CODE"

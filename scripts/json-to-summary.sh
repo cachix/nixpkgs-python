@@ -121,12 +121,12 @@ else
     echo "Generated at: $TIMESTAMP"
     echo ""
     echo "Total checks: $TOTAL"
-    printf "${GREEN}✓ Successful: $SUCCESS_COUNT${NC}\n"
-    printf "${RED}✗ Failed: $FAILED_COUNT${NC}\n"
+    printf '%s✓ Successful: %s%s\n' "$GREEN" "$SUCCESS_COUNT" "$NC"
+    printf '%s✗ Failed: %s%s\n' "$RED" "$FAILED_COUNT" "$NC"
     echo ""
     
     if [ "$SUCCESS_COUNT" -gt 0 ]; then
-        printf "${GREEN}Successful builds:${NC}\n"
+        printf '%sSuccessful builds:%s\n' "$GREEN" "$NC"
         if command -v jq &> /dev/null; then
             echo "$JSON_INPUT" | jq -r '.successful_checks[]' | sort -V | while read -r check; do
                 echo "  ✓ $check"
@@ -143,7 +143,7 @@ else
     fi
 
     if [ "$FAILED_COUNT" -gt 0 ]; then
-        printf "${RED}Failed builds:${NC}\n"
+        printf '%sFailed builds:%s\n' "$RED" "$NC"
         if command -v jq &> /dev/null; then
             echo "$JSON_INPUT" | jq -r '.failed_checks[]' | sort -V | while read -r check; do
                 echo "  ✗ $check"
@@ -160,9 +160,9 @@ else
     fi
 
     if [ "$SUCCESS" = "true" ]; then
-        printf "${GREEN}All checks passed successfully!${NC}\n"
+        printf '%sAll checks passed successfully!%s\n' "$GREEN" "$NC"
     else
-        printf "${YELLOW}Some checks failed. See details above.${NC}\n"
+        printf '%sSome checks failed. See details above.%s\n' "$YELLOW" "$NC"
     fi
 fi
 
