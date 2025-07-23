@@ -152,18 +152,24 @@ def generate_json_output(successful: List[str], failed: List[str]) -> str:
     timestamp = datetime.now(timezone.utc).isoformat()
     total = len(successful) + len(failed)
 
-    return json.dumps(
-        {
-            "timestamp": timestamp,
-            "total": total,
-            "successful": len(successful),
-            "failed": len(failed),
-            "success": len(failed) == 0,
-            "successful_checks": successful,
-            "failed_checks": failed,
-        },
-        indent=2,
-    )
+    json_data = {
+        "timestamp": timestamp,
+        "total": total,
+        "successful": len(successful),
+        "failed": len(failed),
+        "success": len(failed) == 0,
+        "successful_checks": successful,
+        "failed_checks": failed,
+    }
+
+    try:
+        json_output = json.dumps(json_data, indent=2)
+        if not json_output.strip():
+            raise ValueError("Generated JSON is empty")
+        return json_output
+    except (TypeError, ValueError) as e:
+        print(f"Error generating JSON: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def generate_human_output(
