@@ -68,7 +68,7 @@ if [ "$MARKDOWN_MODE" = true ]; then
     echo "| ✅ Successful | $SUCCESS_COUNT |"
     echo "| ❌ Failed | $FAILED_COUNT |"
     echo ""
-    
+
     if [ "$SUCCESS_COUNT" -gt 0 ]; then
         echo "### ✅ Successful builds"
         if [ "$SUCCESS_COUNT" -le 50 ]; then
@@ -92,7 +92,7 @@ if [ "$MARKDOWN_MODE" = true ]; then
         fi
         echo ""
     fi
-    
+
     if [ "$FAILED_COUNT" -gt 0 ]; then
         echo "### ❌ Failed builds"
         echo "<details open>"
@@ -141,7 +141,7 @@ else
         fi
         echo ""
     fi
-    
+
     if [ "$FAILED_COUNT" -gt 0 ]; then
         printf "${RED}Failed builds:${NC}\n"
         if command -v jq &> /dev/null; then
@@ -158,7 +158,7 @@ else
         fi
         echo ""
     fi
-    
+
     if [ "$SUCCESS" = "true" ]; then
         printf "${GREEN}All checks passed successfully!${NC}\n"
     else
