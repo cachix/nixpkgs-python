@@ -147,6 +147,13 @@
             }
             # py3
             {
+              condition = version: versionInBetween version "3.5.2" "3.5";
+              override = appendPatches [
+                ./patches/3.5-pythreadstate-uncheckedget.patch
+                ./patches/3.5-incompatible-types-atomic-pointers.patch
+              ];
+            }
+            {
               condition = version: versionInBetween version "3.8.7" "3.8";
               override = overrideLDConfigPatch ./patches/3.8.6-no-ldconfig.patch;
             }

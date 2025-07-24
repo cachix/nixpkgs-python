@@ -1,0 +1,220 @@
+From bfd316e750bc3040c08d1b5872e2de188e8c1e5f Mon Sep 17 00:00:00 2001
+From: Victor Stinner <victor.stinner@gmail.com>
+Date: Wed, 20 Jan 2016 11:12:38 +0100
+Subject: [PATCH] Add _PyThreadState_UncheckedGet()
+
+Issue #26154: Add a new private _PyThreadState_UncheckedGet() function which
+gets the current thread state, but don't call Py_FatalError() if it is NULL.
+
+Python 3.5.1 removed the _PyThreadState_Current symbol from the Python C API to
+no more expose complex and private atomic types. Atomic types depends on the
+compiler or can even depend on compiler options. The new function
+_PyThreadState_UncheckedGet() allows to get the variable value without having
+to care of the exact implementation of atomic types.
+
+Changes:
+
+* Replace direct usage of the _PyThreadState_Current variable with a call to
+  _PyThreadState_UncheckedGet().
+* In pystate.c, replace direct usage of the _PyThreadState_Current variable
+  with the PyThreadState_GET() macro for readability.
+* Document also PyThreadState_Get() in pystate.h
+---
+ Include/pystate.h      | 10 ++++++++++
+ Modules/faulthandler.c |  2 +-
+ Objects/dictobject.c   |  6 ++----
+ Python/errors.c        |  8 +-------
+ Python/pystate.c       | 33 ++++++++++++++++++++-------------
+ Python/sysmodule.c     |  2 +-
+ 6 files changed, 35 insertions(+), 26 deletions(-)
+
+diff --git a/Include/pystate.h b/Include/pystate.h
+index 6000b81ae46..b50b16b39c0 100644
+--- a/Include/pystate.h
++++ b/Include/pystate.h
+@@ -168,7 +168,17 @@ PyAPI_FUNC(void) PyThreadState_DeleteCurrent(void);
+ PyAPI_FUNC(void) _PyGILState_Reinit(void);
+ #endif
+ 
++/* Return the current thread state. The global interpreter lock must be held.
++ * When the current thread state is NULL, this issues a fatal error (so that
++ * the caller needn't check for NULL). */
+ PyAPI_FUNC(PyThreadState *) PyThreadState_Get(void);
++
++#ifdef WITH_THREAD
++/* Similar to PyThreadState_Get(), but don't issue a fatal error
++ * if it is NULL. */
++PyAPI_FUNC(PyThreadState *) _PyThreadState_UncheckedGet(void);
++#endif
++
+ PyAPI_FUNC(PyThreadState *) PyThreadState_Swap(PyThreadState *);
+ PyAPI_FUNC(PyObject *) PyThreadState_GetDict(void);
+ PyAPI_FUNC(int) PyThreadState_SetAsyncExc(long, PyObject *);
+diff --git a/Modules/faulthandler.c b/Modules/faulthandler.c
+index 1ed22bf8bc6..14384b5d1cf 100644
+--- a/Modules/faulthandler.c
++++ b/Modules/faulthandler.c
+@@ -490,7 +490,7 @@ faulthandler_thread(void *unused)
+         assert(st == PY_LOCK_FAILURE);
+ 
+         /* get the thread holding the GIL, NULL if no thread hold the GIL */
+-        current = (PyThreadState*)_Py_atomic_load_relaxed(&_PyThreadState_Current);
++        current = _PyThreadState_UncheckedGet();
+ 
+         _Py_write_noraise(thread.fd, thread.header, (int)thread.header_len);
+ 
+diff --git a/Objects/dictobject.c b/Objects/dictobject.c
+index 9a30fa88972..8523511d3ac 100644
+--- a/Objects/dictobject.c
++++ b/Objects/dictobject.c
+@@ -1064,8 +1064,7 @@ PyDict_GetItem(PyObject *op, PyObject *key)
+        Let's just hope that no exception occurs then...  This must be
+        _PyThreadState_Current and not PyThreadState_GET() because in debug
+        mode, the latter complains if tstate is NULL. */
+-    tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    tstate = _PyThreadState_UncheckedGet();
+     if (tstate != NULL && tstate->curexc_type != NULL) {
+         /* preserve the existing exception */
+         PyObject *err_type, *err_value, *err_tb;
+@@ -1102,8 +1101,7 @@ _PyDict_GetItem_KnownHash(PyObject *op, PyObject *key, Py_hash_t hash)
+        Let's just hope that no exception occurs then...  This must be
+        _PyThreadState_Current and not PyThreadState_GET() because in debug
+        mode, the latter complains if tstate is NULL. */
+-    tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    tstate = _PyThreadState_UncheckedGet();
+     if (tstate != NULL && tstate->curexc_type != NULL) {
+         /* preserve the existing exception */
+         PyObject *err_type, *err_value, *err_tb;
+diff --git a/Python/errors.c b/Python/errors.c
+index 7b675667275..5ff1e4c81a4 100644
+--- a/Python/errors.c
++++ b/Python/errors.c
+@@ -152,13 +152,7 @@ PyErr_SetString(PyObject *exception, const char *string)
+ PyObject *
+ PyErr_Occurred(void)
+ {
+-    /* If there is no thread state, PyThreadState_GET calls
+-       Py_FatalError, which calls PyErr_Occurred.  To avoid the
+-       resulting infinite loop, we inline PyThreadState_GET here and
+-       treat no thread as no error. */
+-    PyThreadState *tstate =
+-        ((PyThreadState*)_Py_atomic_load_relaxed(&_PyThreadState_Current));
+-
++    PyThreadState *tstate = _PyThreadState_UncheckedGet();
+     return tstate == NULL ? NULL : tstate->curexc_type;
+ }
+ 
+diff --git a/Python/pystate.c b/Python/pystate.c
+index 7e0267ae1d0..83f15fd6714 100644
+--- a/Python/pystate.c
++++ b/Python/pystate.c
+@@ -3,6 +3,12 @@
+ 
+ #include "Python.h"
+ 
++#ifndef Py_BUILD_CORE
++/* ensure that PyThreadState_GET() is a macro, not an alias to
++ * PyThreadState_Get() */
++#  error "pystate.c must be compiled with Py_BUILD_CORE defined"
++#endif
++
+ /* --------------------------------------------------------------------------
+ CAUTION
+ 
+@@ -423,7 +429,7 @@ tstate_delete_common(PyThreadState *tstate)
+ void
+ PyThreadState_Delete(PyThreadState *tstate)
+ {
+-    if (tstate == (PyThreadState*)_Py_atomic_load_relaxed(&_PyThreadState_Current))
++    if (tstate == PyThreadState_GET())
+         Py_FatalError("PyThreadState_Delete: tstate is still current");
+ #ifdef WITH_THREAD
+     if (autoInterpreterState && PyThread_get_key_value(autoTLSkey) == tstate)
+@@ -437,8 +443,7 @@ PyThreadState_Delete(PyThreadState *tstate)
+ void
+ PyThreadState_DeleteCurrent()
+ {
+-    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    PyThreadState *tstate = PyThreadState_GET();
+     if (tstate == NULL)
+         Py_FatalError(
+             "PyThreadState_DeleteCurrent: no current tstate");
+@@ -488,11 +493,17 @@ _PyThreadState_DeleteExcept(PyThreadState *tstate)
+ }
+ 
+ 
++PyThreadState *
++_PyThreadState_UncheckedGet(void)
++{
++    return PyThreadState_GET();
++}
++
++
+ PyThreadState *
+ PyThreadState_Get(void)
+ {
+-    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    PyThreadState *tstate = PyThreadState_GET();
+     if (tstate == NULL)
+         Py_FatalError("PyThreadState_Get: no current thread");
+ 
+@@ -503,8 +514,7 @@ PyThreadState_Get(void)
+ PyThreadState *
+ PyThreadState_Swap(PyThreadState *newts)
+ {
+-    PyThreadState *oldts = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    PyThreadState *oldts = PyThreadState_GET();
+ 
+     _Py_atomic_store_relaxed(&_PyThreadState_Current, newts);
+     /* It should not be possible for more than one thread state
+@@ -535,8 +545,7 @@ PyThreadState_Swap(PyThreadState *newts)
+ PyObject *
+ PyThreadState_GetDict(void)
+ {
+-    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    PyThreadState *tstate = PyThreadState_GET();
+     if (tstate == NULL)
+         return NULL;
+ 
+@@ -682,7 +691,7 @@ PyThreadState_IsCurrent(PyThreadState *tstate)
+ {
+     /* Must be the tstate for this thread */
+     assert(PyGILState_GetThisThreadState()==tstate);
+-    return tstate == (PyThreadState*)_Py_atomic_load_relaxed(&_PyThreadState_Current);
++    return tstate == PyThreadState_GET();
+ }
+ 
+ /* Internal initialization/finalization functions called by
+@@ -774,9 +783,7 @@ PyGILState_GetThisThreadState(void)
+ int
+ PyGILState_Check(void)
+ {
+-    /* can't use PyThreadState_Get() since it will assert that it has the GIL */
+-    PyThreadState *tstate = (PyThreadState*)_Py_atomic_load_relaxed(
+-        &_PyThreadState_Current);
++    PyThreadState *tstate = PyThreadState_GET();
+     return tstate && (tstate == PyGILState_GetThisThreadState());
+ }
+ 
+diff --git a/Python/sysmodule.c b/Python/sysmodule.c
+index 334f5d0c8e9..8d7e05a465a 100644
+--- a/Python/sysmodule.c
++++ b/Python/sysmodule.c
+@@ -1397,7 +1397,7 @@ PySys_AddXOption(const wchar_t *s)
+     Py_XDECREF(name);
+     Py_XDECREF(value);
+     /* No return value, therefore clear error state if possible */
+-    if (_Py_atomic_load_relaxed(&_PyThreadState_Current))
++    if (_PyThreadState_UncheckedGet())
+         PyErr_Clear();
+ }
+ 
+-- 
+2.49.0
+
