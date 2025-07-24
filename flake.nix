@@ -156,9 +156,10 @@
             }
             {
               condition = version: versionInBetween version "3.5.3" "3.5";
-              override = appendPatches [
-                ./patches/3.5-get-entropy-macos.patch
-              ];
+              override = appendPatches (
+                (lib.optionals (version == "3.5.0") [ ./patches/3.5.0-os-random-prepatch.patch ])
+                ++ [ ./patches/3.5-get-entropy-macos.patch ]
+              );
             }
             {
               condition = version: versionInBetween version "3.8.7" "3.8";
@@ -270,7 +271,7 @@
             }
             # fill in the missing pc file
             {
-              condition = version: versionInBetween version "3.5.2" "3.0" && pkgs.stdenv.isLinux;
+              condition = version: versionInBetween version "3.5.2" "3.0";
               override =
                 pkg:
                 pkg.overrideAttrs (old: {
