@@ -121,6 +121,7 @@
                 lib.pipe pkg [
                   (filterOutPatch "find_library-gcc10.patch")
                   (filterOutPatch "profile-task.patch")
+                  (appendPatches [ ./patches/2.7-get-entropy-macos.patch ])
                 ];
             }
             # patch not available before 2.7.11
@@ -146,6 +147,20 @@
               override = filterOutPatch "20ea5b46aaf1e7bdf9d6905ba8bece2cc73b05b0.patch";
             }
             # py3
+            {
+              condition = version: versionInBetween version "3.5.2" "3.5";
+              override = appendPatches [
+                ./patches/3.5-pythreadstate-uncheckedget.patch
+                ./patches/3.5-incompatible-types-atomic-pointers.patch
+              ];
+            }
+            {
+              condition = version: versionInBetween version "3.5.3" "3.5";
+              override = appendPatches (
+                (lib.optionals (version == "3.5.0") [ ./patches/3.5.0-os-random-prepatch.patch ])
+                ++ [ ./patches/3.5-get-entropy-macos.patch ]
+              );
+            }
             {
               condition = version: versionInBetween version "3.8.7" "3.8";
               override = overrideLDConfigPatch ./patches/3.8.6-no-ldconfig.patch;
@@ -256,7 +271,7 @@
             }
             # fill in the missing pc file
             {
-              condition = version: versionInBetween version "3.5.2" "3.0" && pkgs.stdenv.isLinux;
+              condition = version: versionInBetween version "3.5.2" "3.0";
               override =
                 pkg:
                 pkg.overrideAttrs (old: {
