@@ -1,0 +1,18 @@
+[project]
+name = "nixpkgs-python"
+version = "0.1.0"
+description = "Update and check scripts for nixpkgs-python"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "markdown>=3.8.2",
+    "rich>=14.0.0",
+]
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["scripts"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

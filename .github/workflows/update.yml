@@ -10,36 +10,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
+      - uses: actions/checkout@v4
+        with:
           ref: main
-    - name: Install Nix
-      uses: cachix/install-nix-action@f0fe604f8a612776892427721526b4c7cfb23aba # v31
-    - name: Install Cachix
-      uses: cachix/cachix-action@v16
-      with:
-        name: nixpkgs-python
-        extraPullNames: devenv
-    - name: Install devenv.sh
-      run: nix profile install github:cachix/devenv/latest
-    - run: devenv shell python update.py
-    - run: nix flake check --keep-going --accept-flake-config --show-trace
-    - name: Create Pull Request
-      id: create-pull-request
-      uses: peter-evans/create-pull-request@v7
-      with:
-        commit-message: Update Python versions
-        title: Update Python versions
-        body: |
-          Automatically created pull-request to update Python versions.
+      - name: Install Nix
+        uses: cachix/install-nix-action@f0fe604f8a612776892427721526b4c7cfb23aba # v31
+      - name: Install Cachix
+        uses: cachix/cachix-action@v16
+        with:
+          name: nixpkgs-python
+          extraPullNames: devenv
+      - name: Install devenv.sh
+        run: nix profile install github:cachix/devenv/latest
+      - run: devenv shell -- nixpkgs-python-update
+      - run: nix flake check --keep-going --accept-flake-config --show-trace
+      - name: Create Pull Request
+        id: create-pull-request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: Update Python versions
+          title: Update Python versions
+          body: |
+            Automatically created pull-request to update Python versions.
 
-          This is the result of running:
+            This is the result of running:
 
-          ```
-          devenv shell python update.py
-          ```
-        delete-branch: true
-    - if: ${{ steps.create-pull-request.outputs.pull-request-operation == 'created' }}
-      uses: peter-evans/enable-pull-request-automerge@v3
-      with:
-        pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
+            ```
+            devenv shell -- nixpkgs-python-update
+            ```
+          delete-branch: true
+      - if: ${{ steps.create-pull-request.outputs.pull-request-operation == 'created' }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}

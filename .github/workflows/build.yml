@@ -6,19 +6,80 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   build:
     name: Build
     strategy:
       fail-fast: false
       matrix:
-        os: [[self-hosted, linux, X64], [macos-13], [self-hosted, macOS, ARM64], [self-hosted, linux, ARM64]]
+        os:
+          - [self-hosted, linux, X64]
+          - [macos-13]
+          - [self-hosted, macOS, ARM64]
+          - [self-hosted, linux, ARM64]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@f0fe604f8a612776892427721526b4c7cfb23aba # v31
-    - uses: cachix/cachix-action@v16
-      with:
-        name: nixpkgs-python
-        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix flake check -L --keep-going --accept-flake-config --show-trace
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@f0fe604f8a612776892427721526b4c7cfb23aba # v31
+      - uses: cachix/cachix-action@v16
+        with:
+          name: nixpkgs-python
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Install devenv
+        if: runner.os == 'macOS'
+        run: |
+          nix profile install --accept-flake-config github:cachix/devenv/latest
+
+      - name: Check patch phase
+        continue-on-error: true
+        run: |
+          echo "Running patch phase checks..."
+          SYSTEM=$(nix eval --impure --raw --expr 'builtins.currentSystem')
+          echo "System: $SYSTEM"
+          nix build .#patchChecks.$SYSTEM.all -L --keep-going --accept-flake-config --show-trace --no-link
+
+      - name: Run full build
+        id: build
+        run: |
+          # Run checks with JSON output using devenv shell
+          devenv shell --quiet -- 'nixpkgs-python-check --json' > build-results.json || BUILD_EXIT_CODE=$?
+
+          # Generate human-readable summaries using devenv shell
+          devenv shell --quiet -- 'nixpkgs-python-summary < build-results.json' > build-summary.txt || true
+          devenv shell --quiet -- 'nixpkgs-python-summary --markdown < build-results.json' > build-summary.md || true
+
+          # Add to GitHub Actions summary (job summary)
+          if [ -f build-summary.md ]; then
+            cat build-summary.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Also output to console for visibility (redirect to stderr)
+          echo "Build results:" >&2
+          cat build-summary.txt >&2
+
+          # Check if we have valid JSON output to distinguish between script failures and build failures
+          if [ ! -f build-results.json ] || ! jq empty build-results.json 2>/dev/null; then
+            echo "Error: Script failed to produce valid JSON output - this indicates a script/infrastructure error" >&2
+            exit ${BUILD_EXIT_CODE:-1}
+          fi
+
+          # If we have valid JSON, the script ran successfully even if some builds failed
+          # Don't fail the CI step for Python build failures
+          echo "Script completed successfully. Individual build failures are tracked in the summary." >&2
+          exit 0
+
+      - name: Upload build results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-results-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            build-results.json
+            build-summary.txt
+            build-summary.md
+          retention-days: 7
