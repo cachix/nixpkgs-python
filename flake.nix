@@ -155,6 +155,12 @@
               ];
             }
             {
+              condition = version: versionInBetween version "3.5.3" "3.5";
+              override = appendPatches [
+                ./patches/3.5-get-entropy-macos.patch
+              ];
+            }
+            {
               condition = version: versionInBetween version "3.8.7" "3.8";
               override = overrideLDConfigPatch ./patches/3.8.6-no-ldconfig.patch;
             }
