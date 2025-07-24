@@ -121,6 +121,7 @@
                 lib.pipe pkg [
                   (filterOutPatch "find_library-gcc10.patch")
                   (filterOutPatch "profile-task.patch")
+                  (appendPatches [ ./patches/2.7-get-entropy-macos.patch ])
                 ];
             }
             # patch not available before 2.7.11

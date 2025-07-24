@@ -1,0 +1,27 @@
+From 09231e657aeaea64ca425a387791c6fa09070221 Mon Sep 17 00:00:00 2001
+From: Ned Deily <nad@python.org>
+Date: Sat, 12 Nov 2016 16:34:25 -0500
+Subject: [PATCH] Issue #28676: Prevent missing 'getentropy' declaration
+ warning on macOS. Initial patch by Gareth Rees.
+
+---
+ Python/random.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Python/random.c b/Python/random.c
+index b4bc1f37ab8..2f83b5d087d 100644
+--- a/Python/random.c
++++ b/Python/random.c
+@@ -3,6 +3,9 @@
+ #include <windows.h>
+ #else
+ #include <fcntl.h>
++#if defined(HAVE_GETRANDOM) || defined(HAVE_GETENTROPY)
++#include <sys/random.h>
++#endif
+ #endif
+ 
+ #ifdef Py_DEBUG
+-- 
+2.49.0
+
