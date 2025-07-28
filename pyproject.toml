@@ -5,6 +5,7 @@ description = "Update and check scripts for nixpkgs-python"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "requests",
     "markdown>=3.8.2",
     "rich>=14.0.0",
 ]
