@@ -2,6 +2,7 @@ import requests
 import json
 import base64
 import hashlib
+import os
 
 
 def source(version):
@@ -104,9 +105,16 @@ if __name__ == "__main__":
 
     versions = get_all_releases(response, versions)
 
+    headers = {}
+    if gh_token := os.getenv("GH_TOKEN"):
+        headers["Authorization"] = f"Bearer {gh_token}"
+
     activestate_response = requests.get(
-        "https://api.github.com/repos/ActiveState/cpython/releases"
+        "https://api.github.com/repos/ActiveState/cpython/releases", headers=headers
     )
+
+    activestate_response.raise_for_status()
+
     versions = get_activestate_releases(activestate_response, versions)
 
     with open("versions.json", "w") as f:
