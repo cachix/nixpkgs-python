@@ -282,10 +282,12 @@
                     + old.postInstall;
                 });
             }
-            { condition = version: lib.versionOlder version "3.12";
+            {
+              condition = version: lib.versionOlder version "3.12";
               override = filterOutPatch "CVE-2025-0938.patch";
             }
-            { condition = version: versionInBetween version "3.12" "3.11";
+            {
+              condition = version: versionInBetween version "3.12" "3.11";
               override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
             }
           ];
