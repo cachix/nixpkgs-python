@@ -1,8 +1,24 @@
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 import json
 import base64
 import hashlib
 import os
+
+
+def create_session_with_retries():
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=5,
+        backoff_factor=1,
+        status_forcelist=list(range(500, 600)),  # All 5xx errors
+        allowed_methods=["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE"],
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
 
 
 def source(version):
@@ -26,7 +42,7 @@ def get_versions():
         return d
 
 
-def get_all_releases(response, versions):
+def get_all_releases(response, versions, session):
     for entry in response.json():
         cycle = entry["cycle"]
         latest_version = entry["latest"]
@@ -59,7 +75,7 @@ def get_all_releases(response, versions):
             else:
                 url = source(version)
                 print(f"Downloading {url}")
-                response = requests.get(url)
+                response = session.get(url)
                 response.raise_for_status()
                 versions["releases"][version] = {
                     "hash": calculate_sha256(response.content),
@@ -68,7 +84,7 @@ def get_all_releases(response, versions):
     return versions
 
 
-def get_activestate_releases(response, versions):
+def get_activestate_releases(response, versions, session):
     for entry in response.json():
         version = entry["tag_name"].lstrip("v")
         cycle = ".".join(version.split(".")[:2])
@@ -84,7 +100,7 @@ def get_activestate_releases(response, versions):
         else:
             url = activestate_source(version)
             print(f"Downloading {url}")
-            response = requests.get(url)
+            response = session.get(url)
             response.raise_for_status()
             versions["releases"][version] = {
                 "hash": calculate_sha256(response.content),
@@ -99,23 +115,24 @@ def calculate_sha256(contents):
 
 if __name__ == "__main__":
     versions = get_versions()
+    session = create_session_with_retries()
 
     # TODO: pypy: https://downloads.python.org/pypy/versions.json
-    response = requests.get("https://endoflife.date/api/python.json")
+    response = session.get("https://endoflife.date/api/python.json")
 
-    versions = get_all_releases(response, versions)
+    versions = get_all_releases(response, versions, session)
 
     headers = {}
     if gh_token := os.getenv("GH_TOKEN"):
         headers["Authorization"] = f"Bearer {gh_token}"
 
-    activestate_response = requests.get(
+    activestate_response = session.get(
         "https://api.github.com/repos/ActiveState/cpython/releases", headers=headers
     )
 
     activestate_response.raise_for_status()
 
-    versions = get_activestate_releases(activestate_response, versions)
+    versions = get_activestate_releases(activestate_response, versions, session)
 
     with open("versions.json", "w") as f:
         json.dump(versions, f, indent=4)
