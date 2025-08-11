@@ -23,7 +23,7 @@ jobs:
           - [self-hosted, linux, ARM64]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@c134e4c9e34bac6cab09cf239815f9339aaaf84e # v31
       - uses: cachix/cachix-action@v16
         with:
