@@ -711,6 +711,10 @@
         "3.13.7": {
             "hash": "bJ2Ag5z6IAJPNNmm3TGuKpzZf/XpgOlpIJdGA3pRU7I=",
             "url": "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tgz"
+        },
+        "3.13.8": {
+            "hash": "BhCP6W9AibfZ4AlstMqcgd3NUTX3eafelM9Zq8qktT8=",
+            "url": "https://www.python.org/ftp/python/3.13.8/Python-3.13.8.tgz"
         }
     },
     "latest": {
@@ -725,6 +729,6 @@
         "3.4": "3.4.10",
         "3.3": "3.3.7",
         "2.7": "2.7.18.9",
-        "3.13": "3.13.7"
+        "3.13": "3.13.8"
     }
 }
