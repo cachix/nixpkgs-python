@@ -719,13 +719,29 @@
         "3.14.0": {
             "hash": "iNLaTu1C+ppfQv9YqLyJiIgb1sVH4pfkZoLCaHY4qFE=",
             "url": "https://www.python.org/ftp/python/3.14.0/Python-3.14.0.tgz"
+        },
+        "3.12.12": {
+            "hash": "SHyQjd9Al6G5uoWfJf5G0izKq/szWID6rDBaxiv/t5s=",
+            "url": "https://www.python.org/ftp/python/3.12.12/Python-3.12.12.tgz"
+        },
+        "3.11.14": {
+            "hash": "Vj0qGypbpdVAm17NBaDhv5sCjPPmpvDIel3I3D8tkYI=",
+            "url": "https://www.python.org/ftp/python/3.11.14/Python-3.11.14.tgz"
+        },
+        "3.10.19": {
+            "hash": "oHj7LXohYHHrvi40tfU1Xda26bDNG6zEpBxjmQxaDuw=",
+            "url": "https://www.python.org/ftp/python/3.10.19/Python-3.10.19.tgz"
+        },
+        "3.9.24": {
+            "hash": "mjLPxoOuyq29ntiRrCr5RR/zf0igCi2OH07NnCof/cs=",
+            "url": "https://www.python.org/ftp/python/3.9.24/Python-3.9.24.tgz"
         }
     },
     "latest": {
-        "3.12": "3.12.11",
-        "3.11": "3.11.13",
-        "3.10": "3.10.18",
-        "3.9": "3.9.23",
+        "3.12": "3.12.12",
+        "3.11": "3.11.14",
+        "3.10": "3.10.19",
+        "3.9": "3.9.24",
         "3.8": "3.8.20",
         "3.7": "3.7.17",
         "3.6": "3.6.15",
