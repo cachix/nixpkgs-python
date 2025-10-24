@@ -735,6 +735,10 @@
         "3.9.24": {
             "hash": "mjLPxoOuyq29ntiRrCr5RR/zf0igCi2OH07NnCof/cs=",
             "url": "https://www.python.org/ftp/python/3.9.24/Python-3.9.24.tgz"
+        },
+        "3.13.9": {
+            "hash": "xMBmrxnJj7eDXUc769fiO+hPbph01H2545po7l0M41w=",
+            "url": "https://www.python.org/ftp/python/3.13.9/Python-3.13.9.tgz"
         }
     },
     "latest": {
@@ -749,7 +753,7 @@
         "3.4": "3.4.10",
         "3.3": "3.3.7",
         "2.7": "2.7.18.9",
-        "3.13": "3.13.8",
+        "3.13": "3.13.9",
         "3.14": "3.14.0"
     }
 }
