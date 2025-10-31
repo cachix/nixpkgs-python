@@ -18,7 +18,7 @@ jobs:
       matrix:
         os:
           - [self-hosted, linux, X64]
-          - [macos-13]
+          - [macos-15-intel]
           - [self-hosted, macOS, ARM64]
           - [self-hosted, linux, ARM64]
     runs-on: ${{ matrix.os }}
