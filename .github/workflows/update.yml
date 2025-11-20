@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: main
+          persist-credentials: false
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
       - name: Install Nix
