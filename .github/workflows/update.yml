@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: main
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
       - name: Install Nix
         uses: cachix/install-nix-action@9280e7aca88deada44c930f1e2c78e21c3ae3edd # v31
       - name: Install Cachix
