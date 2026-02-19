@@ -5,6 +5,7 @@ import json
 import base64
 import hashlib
 import os
+from packaging.version import Version
 
 
 def create_session_with_retries():
@@ -93,7 +94,9 @@ def get_activestate_releases(response, versions, session):
         if cycle != "2.7":
             continue
 
-        versions["latest"][cycle] = max(version, versions["latest"].get(cycle, ""))
+        versions["latest"][cycle] = max(
+            version, versions["latest"].get(cycle, version), key=Version
+        )
 
         if release.get("hash"):
             continue
