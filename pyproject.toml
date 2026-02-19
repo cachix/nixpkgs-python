@@ -8,6 +8,7 @@ dependencies = [
     "requests",
     "markdown>=3.8.2",
     "rich>=14.0.0",
+    "packaging>=26.0",
 ]
 
 
