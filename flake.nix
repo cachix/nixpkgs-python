@@ -304,7 +304,7 @@
               callPackage pythonFun (
                 {
                   inherit sourceVersion;
-                  hash = null;
+                  hash = "sha256-${hash}";
                   self = packages.${version};
                   passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
                 }
