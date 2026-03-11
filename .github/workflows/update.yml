@@ -20,7 +20,7 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
       - name: Install Nix
-        uses: cachix/install-nix-action@4e002c8ec80594ecd40e759629461e26c8abed15 # v31
+        uses: cachix/install-nix-action@1ca7d21a94afc7c957383a2d217460d980de4934 # v31
       - name: Install Cachix
         uses: cachix/cachix-action@v16
         with:
