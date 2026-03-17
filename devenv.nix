@@ -25,7 +25,7 @@
   '';
 
   git-hooks.hooks = {
-    nixfmt-rfc-style.enable = true;
+    nixfmt.enable = true;
     prettier = {
       enable = true;
       excludes = [ "versions.json" ];
