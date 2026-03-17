@@ -35,7 +35,7 @@ Add the cache substituter and public key to your `flake.nix`:
 {
   nixConfig = {
     extra-substituters = "https://nixpkgs-python.cachix.org";
-    extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcber0jBIYSMemRlUcXNk=";
+    extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
   };
 }
 ```
