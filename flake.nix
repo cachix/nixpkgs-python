@@ -297,6 +297,10 @@
           };
 
           pythonFun = import "${toString pkgs.path}/pkgs/development/interpreters/python/cpython/${infix}default.nix";
+          pythonSrc = pkgs.fetchurl {
+            inherit url;
+            sha256 = hash;
+          };
           python =
             (self.lib.applyOverrides overrides (
               callPackage pythonFun (
@@ -317,12 +321,14 @@
               )
             )).overrideAttrs
               (old: {
-                src = pkgs.fetchurl {
-                  inherit url;
-                  sha256 = hash;
-                };
+                src = pythonSrc;
                 meta = old.meta // {
                   knownVulnerabilities = [ ];
+                };
+                passthru = old.passthru // {
+                  doc = old.passthru.doc.overrideAttrs {
+                    src = pythonSrc;
+                  };
                 };
               });
         in
