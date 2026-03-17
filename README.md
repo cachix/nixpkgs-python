@@ -9,13 +9,44 @@ This project supports the following Python versions:
 - 2.7.6+
 - 3.3.1+ (up to the latest release)
 
-## Cachix (optional)
+## Caching (optional)
 
-If you'd like to avoid compilation [install Cachix](https://docs.cachix.org/installation) and:
+Use the [Cachix](https://docs.cachix.org/installation) binary cache to avoid rebuilding Python from source.
+
+#### System-wide
+
+[Install Cachix](https://docs.cachix.org/installation) and run:
 
     $ cachix use nixpkgs-python
 
-Using the following platforms:
+#### devenv
+
+Add to your `devenv.nix`:
+
+```nix
+cachix.pull = [ "nixpkgs-python" ];
+```
+
+#### Flake
+
+Add the cache substituter and public key to your `flake.nix`:
+
+```nix
+{
+  nixConfig = {
+    extra-substituters = "https://nixpkgs-python.cachix.org";
+    extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcber0jBIYSMemRlUcXNk=";
+  };
+}
+```
+
+> [!NOTE]
+> Do not override the `nixpkgs` input when using this flake.
+> The cached builds are tied to the pinned nixpkgs revision; overriding it will result in cache misses and local rebuilds.
+
+To push your own builds to the cache (useful in CI or team setups), [create a Cachix account](https://app.cachix.org/) and configure a push workflow so builds are cached as they happen.
+
+Supported platforms:
 
 - x86_64-darwin
 - x86_64-linux
@@ -49,7 +80,6 @@ inputs:
 Then run:
 
     $ devenv shell
-    ...
 
 ### flake.nix
 
