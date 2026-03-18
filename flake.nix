@@ -70,6 +70,8 @@
           patchDir + "/distutils-C++.patch"
         else if lib.versionAtLeast version "3.7" then
           ./patches/3.7/distutils-C++-pre-3.7.3.patch
+        else if lib.versionAtLeast version "3.6.8" then
+          ./patches/3.6/distutils-C++-post-3.6.7.patch
         else if lib.versionAtLeast version "3.6.6" then
           ./patches/3.6/distutils-C++-post-3.6.5.patch
         else
@@ -99,6 +101,8 @@
         )
         # mimetypes (NixOS-specific path substitution)
         ++ [ ./patches/shared/mimetypes.patch ]
+        # getentropy header fix for 3.4 (macOS needs <sys/random.h>)
+        ++ lib.optional (versionInBetween version "3.5" "3.4") ./patches/3.4/getentropy.patch
         # distutils C++ — Darwin/Clang only, < 3.12 (distutils removed in 3.12)
         ++ lib.optional (hasDistutilsCxxPatch && atLeast "3.4" && older "3.12") (
           selectDistutilsCxxPatch version patchDir

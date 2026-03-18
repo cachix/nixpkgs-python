@@ -1,0 +1,15 @@
+Include <sys/random.h> when HAVE_GETENTROPY is defined.
+On modern macOS, getentropy() requires this header.
+
+--- a/Python/random.c
++++ b/Python/random.c
+@@ -5,6 +5,9 @@
+ #include <fcntl.h>
+ #ifdef HAVE_SYS_STAT_H
+ #include <sys/stat.h>
++#endif
++#ifdef HAVE_GETENTROPY
++#include <sys/random.h>
+ #endif
+ #endif
+
