@@ -29,6 +29,8 @@ jobs:
       - name: Install devenv.sh
         run: nix profile install github:cachix/devenv/latest
       - run: devenv shell -- nixpkgs-python-update
+      - name: Check upstream patch sync
+        run: devenv shell -- nixpkgs-python-sync-patches || true
       - run: nix flake check --keep-going --accept-flake-config --show-trace
       - name: Create Pull Request
         id: create-pull-request

@@ -34,15 +34,171 @@
       versionInBetween =
         version: upper: lower:
         lib.versionAtLeast version lower && lib.versionOlder version upper;
+
+      # Select the correct no-ldconfig patch variant for a Python 3.x version
+      selectNoLdconfigPatch =
+        version: patchDir:
+        if versionInBetween version "3.4" "3.0" then
+          ./patches/shared/no-op.patch
+        else if versionInBetween version "3.5.3" "3.5" then
+          ./patches/shared/no-op.patch
+        else if versionInBetween version "3.7.10" "3.7" then
+          patchDir + "/no-ldconfig-pre-3.7.10.patch"
+        else if versionInBetween version "3.8.7" "3.8" then
+          patchDir + "/no-ldconfig-pre-3.8.7.patch"
+        else
+          patchDir + "/no-ldconfig.patch";
+
+      # Select the correct no-ldconfig patch variant for Python 2.x
+      select2xNoLdconfigPatch =
+        version: patchDir:
+        if versionInBetween version "2.7.12" "2.7.11" then
+          patchDir + "/no-ldconfig-2.7.10.patch"
+        else if versionInBetween version "2.7.13" "2.7.12" then
+          patchDir + "/no-ldconfig-2.7.11.patch"
+        else if versionInBetween version "2.7.14" "2.7.13" then
+          patchDir + "/no-ldconfig-2.7.12.patch"
+        else
+          patchDir + "/no-ldconfig.patch";
+
+      # Select the correct distutils C++ patch variant for a Python 3.x version (Darwin-only)
+      selectDistutilsCxxPatch =
+        version: patchDir:
+        if lib.versionAtLeast version "3.11" then
+          ./patches/3.11/distutils-C++.patch
+        else if lib.versionAtLeast version "3.7.3" then
+          patchDir + "/distutils-C++.patch"
+        else if lib.versionAtLeast version "3.7" then
+          ./patches/3.7/distutils-C++-pre-3.7.3.patch
+        else if lib.versionAtLeast version "3.6.6" then
+          ./patches/3.6/distutils-C++-post-3.6.5.patch
+        else
+          patchDir + "/distutils-C++.patch";
+
+      # Compute the complete patch list for a Python 3.x version
+      patches3For =
+        {
+          version,
+          patchDir,
+          stdenv,
+        }:
+        let
+          atLeast = lib.versionAtLeast version;
+          older = lib.versionOlder version;
+          hasDistutilsCxxPatch = !(stdenv.cc.isGNU or false);
+          isCross = stdenv.hostPlatform != stdenv.buildPlatform;
+        in
+        # no-ldconfig (NixOS-specific)
+        [ (selectNoLdconfigPatch version patchDir) ]
+        # virtualenv-permissions (NixOS-specific)
+        ++ lib.optional (atLeast "3.3") (
+          if atLeast "3.13" then
+            ./patches/shared/virtualenv-permissions-3.13.patch
+          else
+            ./patches/shared/virtualenv-permissions.patch
+        )
+        # mimetypes (NixOS-specific path substitution)
+        ++ [ ./patches/shared/mimetypes.patch ]
+        # distutils C++ — Darwin/Clang only, < 3.12 (distutils removed in 3.12)
+        ++ lib.optional (hasDistutilsCxxPatch && atLeast "3.4" && older "3.12") (
+          selectDistutilsCxxPatch version patchDir
+        )
+        # Cross-compilation: LDSHARED uses $CC instead of gcc (>= 3.7 && < 3.12)
+        ++ lib.optional (atLeast "3.7" && older "3.12") ./patches/shared/LDSHARED-posix.patch
+        # Cross-compilation: use sysconfigdata to find headers (>= 3.7.3 && < 3.12)
+        ++ lib.optional (atLeast "3.7.3" && older "3.12")
+          ./patches/shared/fix-finding-headers-when-cross-compiling.patch
+        # LoongArch architecture support (>= 3.7 && < 3.12, doesn't apply to older versions)
+        ++ lib.optional (atLeast "3.7" && older "3.12") ./patches/shared/loongarch-support.patch
+        # Platform triplet detection fix (>= 3.11 && < 3.13)
+        ++ lib.optional (atLeast "3.11" && older "3.13") ./patches/shared/platform-triplet-detection.patch
+        # FreeBSD cross-compilation support
+        ++ lib.optional (isCross && stdenv.hostPlatform.isFreeBSD) ./patches/shared/freebsd-cross.patch
+        # Darwin compilation fix (< 3.7.8 or 3.8.0-3.8.3)
+        ++ lib.optional (older "3.7.8" || versionInBetween version "3.8.4" "3.8")
+          ./patches/shared/fix-darwin-compilation.patch
+        # 3.5 compilation fixes
+        ++ lib.optionals (versionInBetween version "3.5.2" "3.5") [
+          (patchDir + "/pythreadstate-uncheckedget.patch")
+          (patchDir + "/incompatible-types-atomic-pointers.patch")
+        ]
+        ++ lib.optionals (versionInBetween version "3.5.3" "3.5") (
+          (lib.optional (version == "3.5.0") (patchDir + "/os-random-prepatch.patch"))
+          ++ [ (patchDir + "/get-entropy-macos.patch") ]
+        )
+        # ensurepip fix for 3.6 < 3.6.15
+        ++ lib.optionals (versionInBetween version "3.6.15" "3.6") [
+          ./patches/3.6/ensurepip-1.patch
+          ./patches/3.6/ensurepip-2.patch
+        ];
+
+      # Compute the complete patch list for a Python 2.x version
+      patches2For =
+        {
+          version,
+          patchDir,
+          stdenv,
+        }:
+        let
+          atLeast = lib.versionAtLeast version;
+          older = lib.versionOlder version;
+          hasDistutilsCxxPatch = !(stdenv.cc.isGNU or false);
+          isDarwin = stdenv.hostPlatform.isDarwin;
+          isLinux = stdenv.hostPlatform.isLinux;
+          isCross = stdenv.hostPlatform != stdenv.buildPlatform;
+        in
+        # NixOS-specific: library/include path handling
+        [ (patchDir + "/search-path.patch") ]
+        # NixOS-specific: mtime=1 handling for Nix store
+        ++ [ (patchDir + "/nix-store-mtime.patch") ]
+        # deterministic builds (patch available >= 2.7.3)
+        ++ lib.optional (atLeast "2.7.3") (patchDir + "/deterministic-build.patch")
+        # Bug fix: re match index
+        ++ [ (patchDir + "/re_match_index.patch") ]
+        # Atomic pyc writing (patch available >= 2.7.4)
+        ++ lib.optional (atLeast "2.7.4") (patchDir + "/atomic_pyc.patch")
+        # PGO profile task list (patch available >= 2.7.13)
+        ++ lib.optional (atLeast "2.7.13") (patchDir + "/profile-task.patch")
+        # Win64 workaround fix (patch available >= 2.7.3)
+        ++ lib.optional (atLeast "2.7.3") (patchDir + "/no-win64-workaround.patch")
+        # ActiveState fork compat: revert their openssl change (>= 2.7.18.8)
+        ++ lib.optional (atLeast "2.7.18.8") (patchDir + "/20ea5b46-openssl-revert.patch")
+        # DARWIN ONLY: NixOS-specific tcl-tk path fix
+        ++ lib.optional isDarwin (patchDir + "/use-correct-tcl-tk-on-darwin.patch")
+        # LINUX ONLY: NixOS-specific no-ldconfig
+        ++ lib.optional (isLinux && atLeast "2.7.11") (select2xNoLdconfigPatch version patchDir)
+        # LINUX ONLY: find_library gcc10 fix (patch available >= 2.7.13)
+        ++ lib.optional (isLinux && atLeast "2.7.13") (patchDir + "/find_library-gcc10.patch")
+        # DARWIN ONLY: distutils C++ for Clang
+        ++ lib.optional hasDistutilsCxxPatch (
+          if older "2.7.17" && atLeast "2.7.6" then
+            patchDir + "/distutils-C++.patch"
+          else
+            patchDir + "/python-2.7-distutils-C++.patch"
+        )
+        # Cross-compilation
+        ++ lib.optional isCross (patchDir + "/cross-compile.patch")
+        # macOS entropy fix (needed for < 2.7.13)
+        ++ lib.optional (older "2.7.13") (patchDir + "/get-entropy-macos.patch");
+
+      # Compute the fully-controlled patch list for any Python version.
+      # This replaces the nixpkgs patch list entirely via overrideAttrs.
+      patchesFor =
+        {
+          version,
+          sourceVersion,
+          stdenv,
+        }:
+        let
+          mm = "${sourceVersion.major}.${sourceVersion.minor}";
+          patchDir = ./patches + "/${mm}";
+        in
+        if sourceVersion.major == "2" then
+          patches2For { inherit version patchDir stdenv; }
+        else
+          patches3For { inherit version patchDir stdenv; };
     in
     {
-      lib.applyOverrides =
-        overrides: pkg:
-        let
-          matching = builtins.filter ({ condition, ... }: condition pkg.version) overrides;
-          apply = pkg: { override, ... }: override pkg;
-        in
-        lib.foldl apply pkg matching;
       lib.mkPython =
         {
           pkgs,
@@ -65,230 +221,6 @@
           };
           infix = if sourceVersion.major == "2" then "2.7/" else "";
 
-          # Patch helpers
-
-          overrideLDConfigPatch =
-            path: pkg:
-            pkg.override {
-              noldconfigPatch = path;
-            };
-          # Override the patches of a derivation by applying a function f: oldPatches -> newPatches
-          applyPatches =
-            f: pkg:
-            pkg.overrideAttrs (old: {
-              patches = f old.patches;
-            });
-          # Replace a patch by name in a derivation.
-          replacePatch =
-            name: patch: pkg:
-            lib.pipe pkg [
-              (filterOutPatch name)
-              (appendPatches [ patch ])
-            ];
-          # Remove a patch by name from a derivation.
-          filterOutPatch =
-            name:
-            applyPatches (lib.filter (elem: if builtins.isNull elem then true else !lib.hasSuffix name elem));
-          # Append patches to a derivation.
-          appendPatches = patches: applyPatches (oldPatches: oldPatches ++ patches);
-
-          overrides = [
-            # py2
-            {
-              condition = version: versionInBetween version "2.7.3" "2.6";
-              # patch not available
-              override =
-                pkg:
-                lib.pipe pkg [
-                  (filterOutPatch "deterministic-build.patch")
-                  (filterOutPatch "no-win64-workaround.patch")
-                ];
-            }
-            {
-              condition = version: versionInBetween version "2.7.4" "2.6";
-              # patch not available
-              override = filterOutPatch "atomic_pyc.patch";
-            }
-            {
-              condition = version: versionInBetween version "3.7" "3.3";
-              # patch not available
-              override = filterOutPatch "loongarch-support.patch";
-            }
-            {
-              condition = version: versionInBetween version "2.7.13" "2.6";
-              override =
-                pkg:
-                lib.pipe pkg [
-                  (filterOutPatch "find_library-gcc10.patch")
-                  (filterOutPatch "profile-task.patch")
-                  (appendPatches [ ./patches/2.7-get-entropy-macos.patch ])
-                ];
-            }
-            # patch not available before 2.7.11
-            {
-              condition = version: versionInBetween version "2.7.11" "2.6";
-              override = filterOutPatch "no-ldconfig.patch";
-            }
-            {
-              condition = version: versionInBetween version "2.7.12" "2.7.11";
-              override = replacePatch "no-ldconfig.patch" ./patches/2.7.10-no-ldconfig.patch;
-            }
-            {
-              condition = version: versionInBetween version "2.7.13" "2.7.12";
-              override = replacePatch "no-ldconfig.patch" ./patches/2.7.11-no-ldconfig.patch;
-            }
-            {
-              condition = version: versionInBetween version "2.7.17" "2.7.6";
-              override = replacePatch "python-2.7-distutils-C++.patch" ./patches/2.7.17-distutils-C++.patch;
-            }
-            # this patch reverts an ActiveState change that was introduced in 2.7.18.8
-            {
-              condition = version: versionInBetween version "2.7.18.8" "2.7";
-              override = filterOutPatch "20ea5b46aaf1e7bdf9d6905ba8bece2cc73b05b0.patch";
-            }
-            # py3
-            {
-              condition = version: versionInBetween version "3.5.2" "3.5";
-              override = appendPatches [
-                ./patches/3.5-pythreadstate-uncheckedget.patch
-                ./patches/3.5-incompatible-types-atomic-pointers.patch
-              ];
-            }
-            {
-              condition = version: versionInBetween version "3.5.3" "3.5";
-              override = appendPatches (
-                (lib.optionals (version == "3.5.0") [ ./patches/3.5.0-os-random-prepatch.patch ])
-                ++ [ ./patches/3.5-get-entropy-macos.patch ]
-              );
-            }
-            {
-              condition = version: versionInBetween version "3.8.7" "3.8";
-              override = overrideLDConfigPatch ./patches/3.8.6-no-ldconfig.patch;
-            }
-            {
-              condition = version: versionInBetween version "3.7.10" "3.7";
-              override = overrideLDConfigPatch ./patches/3.7.9-no-ldconfig.patch;
-            }
-            {
-              condition = version: versionInBetween version "3.7.3" "3.7";
-              override = filterOutPatch "fix-finding-headers-when-cross-compiling.patch";
-            }
-            {
-              condition = version: versionInBetween version "3.7.3" "3.7.1";
-              override = replacePatch "python-3.x-distutils-C++.patch" (
-                pkgs.fetchpatch {
-                  url = "https://bugs.python.org/file48016/python-3.x-distutils-C++.patch";
-                  sha256 = "1h18lnpx539h5lfxyk379dxwr8m2raigcjixkf133l4xy3f4bzi2";
-                }
-              );
-            }
-            {
-              condition = version: versionInBetween version "3.7.4" "3.7.3";
-              override = replacePatch "python-3.x-distutils-C++.patch" ./patches/python-3.7.3-distutils-C++.patch;
-            }
-            {
-              condition =
-                version: versionInBetween version "3.7.2" "3.7" || versionInBetween version "3.6.8" "3.6.6";
-              override = replacePatch "python-3.x-distutils-C++.patch" (
-                pkgs.fetchpatch {
-                  url = "https://bugs.python.org/file47669/python-3.8-distutils-C++.patch";
-                  sha256 = "0s801d7ww9yrk6ys053jvdhl0wicbznx08idy36f1nrrxsghb3ii";
-                }
-              );
-            }
-            {
-              condition = version: versionInBetween version "3.5.3" "3.5";
-              # no existing patch available
-              override = overrideLDConfigPatch ./patches/no-op.patch;
-            }
-            {
-              condition = version: versionInBetween version "3.6.6" "3.4";
-              override = replacePatch "python-3.x-distutils-C++.patch" (
-                pkgs.fetchpatch {
-                  url = "https://bugs.python.org/file47046/python-3.x-distutils-C++.patch";
-                  sha256 = "0dgdn9k2kmw4wh90vdnjcrnn97ylxgx7mbn9l87fwz6j501jqvk8";
-                  extraPrefix = "";
-                }
-              );
-            }
-            # no C++ patch for 3.3
-            {
-              condition = version: versionInBetween version "3.4" "3.0";
-              override = filterOutPatch "python-3.x-distutils-C++.patch";
-            }
-            # fix darwin compilation
-            {
-              condition =
-                version: versionInBetween version "3.8.4" "3.8" || versionInBetween version "3.7.8" "3.0";
-              override = appendPatches [
-                (pkgs.fetchpatch {
-                  url = "https://github.com/python/cpython/commit/8ea6353.patch";
-                  sha256 = "xXRDwtMMhb66J4Lis0rtTNxARgPqLAqR2y3YtkJOt2g=";
-                })
-              ];
-            }
-            # Fix ensurepip for 3.6: https://bugs.python.org/issue45700
-            {
-              condition = version: versionInBetween version "3.6.15" "3.6";
-              override = appendPatches [
-                (pkgs.fetchpatch {
-                  url = "https://github.com/python/cpython/commit/8766cb74e186d3820db0a855.patch";
-                  sha256 = "IzAp3M6hpSNcbVRttzvXNDyAVK7vLesKZDEDkdYbuww=";
-                })
-                (pkgs.fetchpatch {
-                  url = "https://github.com/python/cpython/commit/f0be4bbb9b3cee876249c23f.patch";
-                  sha256 = "FUF7ZkkatS4ON4++pR9XJQFQLW1kKSVzSs8NAS19bDY=";
-                })
-              ];
-            }
-            {
-              condition = version: versionInBetween version "3.4" "3.0";
-              override =
-                pkg:
-                (pkg.override {
-                  # no existing patch available
-                  noldconfigPatch = ./patches/no-op.patch;
-                  # otherwise it segfaults
-                  stdenv =
-                    if pkgs.stdenv.isLinux then
-                      pkgs.overrideCC pkgs.stdenv pkgs.gcc9 # gcc8 no longer available
-                    else
-                      pkgs.stdenv;
-                });
-            }
-            # compatibility with substitutions done by the nixpkgs derivation
-            {
-              condition = version: versionInBetween version "3.7" "3.0";
-              override =
-                pkg:
-                pkg.overrideAttrs (old: {
-                  prePatch = ''
-                    substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
-                  ''
-                  + old.prePatch;
-                });
-            }
-            # fill in the missing pc file
-            {
-              condition = version: versionInBetween version "3.5.2" "3.0";
-              override =
-                pkg:
-                pkg.overrideAttrs (old: {
-                  postInstall = ''
-                    ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
-                  ''
-                  + old.postInstall;
-                });
-            }
-            {
-              condition = version: lib.versionOlder version "3.12";
-              override = filterOutPatch "CVE-2025-0938.patch";
-            }
-            {
-              condition = version: versionInBetween version "3.12" "3.11";
-              override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
-            }
-          ];
           callPackage = pkgs.newScope {
             inherit python;
             pkgsBuildHost = pkgs.pkgsBuildHost // {
@@ -302,26 +234,46 @@
             sha256 = hash;
           };
           python =
-            (self.lib.applyOverrides overrides (
-              callPackage pythonFun (
-                {
-                  inherit sourceVersion;
-                  hash = "sha256-${hash}";
-                  self = packages.${version};
-                  passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
-                }
-                // lib.optionalAttrs (sourceVersion.major == "3") {
-                  noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
-                }
-                // lib.optionalAttrs (lib.functionArgs pythonFun ? configd) {
-                  # Nixpkgs had a Darwin SDK refactor in 24.11 which removed configd from the Python derivation
-                  # Only inject configd for older Nixpkgs where it's required.
-                  inherit (pkgs.darwin) configd;
-                }
-              )
+            (callPackage pythonFun (
+              {
+                inherit sourceVersion;
+                hash = "sha256-${hash}";
+                self = packages.${version};
+                passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
+              }
+              // lib.optionalAttrs (sourceVersion.major == "3") {
+                # Dummy — we override patches entirely in overrideAttrs
+                noldconfigPatch = ./patches/shared/no-op.patch;
+              }
+              // lib.optionalAttrs (versionInBetween version "3.5" "3.0" && pkgs.stdenv.isLinux) {
+                # Python 3.0-3.4 segfaults with newer GCC on Linux
+                stdenv = pkgs.overrideCC pkgs.stdenv pkgs.gcc9;
+              }
+              // lib.optionalAttrs (lib.functionArgs pythonFun ? configd) {
+                # Nixpkgs had a Darwin SDK refactor in 24.11 which removed configd from the Python derivation
+                # Only inject configd for older Nixpkgs where it's required.
+                inherit (pkgs.darwin) configd;
+              }
             )).overrideAttrs
               (old: {
                 src = pythonSrc;
+                # Fully-controlled patch list — independent of nixpkgs patch management
+                patches = patchesFor {
+                  inherit version sourceVersion;
+                  inherit (pkgs) stdenv;
+                };
+                # Compatibility with substitutions done by the nixpkgs postPatch
+                prePatch =
+                  lib.optionalString (versionInBetween version "3.7" "3.0") ''
+                    substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
+                  ''
+                  + (old.prePatch or "");
+                # Fill in the missing pc file for old Python 3 versions
+                postInstall =
+                  lib.optionalString (versionInBetween version "3.5.2" "3.0") ''
+                    ln -s "$out/lib/pkgconfig/python-${sourceVersion.major}.${sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
+                  ''
+                  + (old.postInstall or "");
                 meta = old.meta // {
                   knownVulnerabilities = [ ];
                 };

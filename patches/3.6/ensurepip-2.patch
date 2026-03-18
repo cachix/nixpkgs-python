@@ -1,0 +1,23 @@
+--- a/Objects/obmalloc.c
++++ b/Objects/obmalloc.c
+@@ -795,8 +795,14 @@
+  *
+  * You shouldn't change this unless you know what you are doing.
+  */
++
++#if SIZEOF_VOID_P > 4
++#define ALIGNMENT              16               /* must be 2^N */
++#define ALIGNMENT_SHIFT         4
++#else
+ #define ALIGNMENT               8               /* must be 2^N */
+ #define ALIGNMENT_SHIFT         3
++#endif
+ 
+ /* Return the number of bytes in size class I, as a uint. */
+ #define INDEX2SIZE(I) (((uint)(I) + 1) << ALIGNMENT_SHIFT)
+--- /dev/null
++++ b/Misc/NEWS.d/next/Core and Builtins/2019-04-16-11-52-21.bpo-27987.n2_DcQ.rst	
+@@ -0,0 +1,3 @@
++pymalloc returns memory blocks aligned by 16 bytes, instead of 8 bytes, on
++64-bit platforms to conform x86-64 ABI. Recent compilers assume this alignment
++more often. Patch by Inada Naoki.

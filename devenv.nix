@@ -23,6 +23,9 @@
   scripts.nixpkgs-python-update.exec = ''
     python -m scripts.update "$@"
   '';
+  scripts.nixpkgs-python-sync-patches.exec = ''
+    python -m scripts.sync_patches "$@"
+  '';
 
   git-hooks.hooks = {
     nixfmt.enable = true;
