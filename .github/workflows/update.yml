@@ -9,6 +9,10 @@ permissions:
   pull-requests: write
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,19 +21,22 @@ jobs:
         with:
           ref: main
           persist-credentials: false
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
+
       - name: Install Nix
         uses: cachix/install-nix-action@616559265b40713947b9c190a8ff4b507b5df49b # v31
+
       - name: Install Cachix
         uses: cachix/cachix-action@v17
         with:
           name: nixpkgs-python
           extraPullNames: devenv
+
       - name: Install devenv.sh
         run: nix profile install github:cachix/devenv/latest
+      
+      - name: Update Python versions
       - run: devenv shell -- nixpkgs-python-update
-      - run: nix flake check --keep-going --accept-flake-config --show-trace
+
       - name: Create Pull Request
         id: create-pull-request
         uses: peter-evans/create-pull-request@v8
@@ -45,6 +52,7 @@ jobs:
             devenv shell -- nixpkgs-python-update
             ```
           delete-branch: true
+
       - if: ${{ steps.create-pull-request.outputs.pull-request-operation == 'created' }}
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
