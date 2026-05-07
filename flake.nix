@@ -308,7 +308,7 @@
                   inherit sourceVersion;
                   hash = "sha256-${hash}";
                   self = packages.${version};
-                  passthruFun = callPackage "${pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
+                  passthruFun = callPackage "${toString pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
                 }
                 // lib.optionalAttrs (sourceVersion.major == "3") {
                   noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
