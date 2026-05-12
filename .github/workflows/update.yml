@@ -33,7 +33,7 @@ jobs:
 
       - name: Install devenv.sh
         run: nix profile install github:cachix/devenv/latest
-      
+
       - name: Update Python versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
