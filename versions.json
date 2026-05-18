@@ -781,7 +781,7 @@
             "url": "https://www.python.org/ftp/python/3.10.20/Python-3.10.20.tgz"
         },
         "2.7.18.13": {
-            "hash": "6Y5GPepBiOUZ9H6yo6ozMDtaoBdysu+DP/m/VOixrdw=",
+            "hash": "qGKPwnUYkz5b8OI4VjjURjoYuTgl1zR1SEH7joWpH/8=",
             "url": "https://github.com/ActiveState/cpython/archive/refs/tags/v2.7.18.13.tar.gz"
         },
         "3.14.4": {
