@@ -187,6 +187,13 @@
               override = replacePatch "python-3.x-distutils-C++.patch" ./patches/python-3.7.3-distutils-C++.patch;
             }
             {
+              # Nixpkgs dropped the local 3.7/python-3.x-distutils-C++.patch when
+              # Python 3.10 was removed (NixOS/nixpkgs@77ca0804), leaving a fetchpatch
+              # that no longer applies to 3.7.4+. Restore the working patch.
+              condition = version: versionInBetween version "3.11" "3.7.4";
+              override = replacePatch "python-3.x-distutils-C++.patch" ./patches/3.7-distutils-C++.patch;
+            }
+            {
               condition =
                 version: versionInBetween version "3.7.2" "3.7" || versionInBetween version "3.6.8" "3.6.6";
               override = replacePatch "python-3.x-distutils-C++.patch" (
