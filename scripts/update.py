@@ -26,8 +26,8 @@ def source(version):
     return f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
 
 
-def activestate_source(version):
-    return f"https://github.com/ActiveState/cpython/archive/refs/tags/v{version}.tar.gz"
+def activestate_source(tag):
+    return f"https://github.com/ActiveState/cpython/archive/refs/tags/{tag}.tar.gz"
 
 
 # open versions.json and parse json
@@ -87,7 +87,8 @@ def get_all_releases(response, versions, session):
 
 def get_activestate_releases(response, versions, session):
     for entry in response.json():
-        version = entry["tag_name"].lstrip("v")
+        tag = entry["tag_name"]
+        version = tag.lstrip("v")
         cycle = ".".join(version.split(".")[:2])
         release = versions["releases"].get(version, {})
 
@@ -101,7 +102,7 @@ def get_activestate_releases(response, versions, session):
         if release.get("hash"):
             continue
         else:
-            url = activestate_source(version)
+            url = activestate_source(tag)
             print(f"Downloading {url}")
             response = session.get(url)
             response.raise_for_status()
