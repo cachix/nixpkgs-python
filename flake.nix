@@ -187,6 +187,13 @@
               override = replacePatch "python-3.x-distutils-C++.patch" ./patches/python-3.7.3-distutils-C++.patch;
             }
             {
+              # Nixpkgs dropped the local 3.7/python-3.x-distutils-C++.patch when
+              # Python 3.10 was removed (NixOS/nixpkgs@77ca0804), leaving a fetchpatch
+              # that no longer applies to 3.7.4+. Restore the working patch.
+              condition = version: versionInBetween version "3.11" "3.7.4";
+              override = replacePatch "python-3.x-distutils-C++.patch" ./patches/3.7-distutils-C++.patch;
+            }
+            {
               condition =
                 version: versionInBetween version "3.7.2" "3.7" || versionInBetween version "3.6.8" "3.6.6";
               override = replacePatch "python-3.x-distutils-C++.patch" (
@@ -262,10 +269,11 @@
               override =
                 pkg:
                 pkg.overrideAttrs (old: {
-                  prePatch = ''
-                    substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
-                  ''
-                  + old.prePatch;
+                  prePatch =
+                    ''
+                      substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
+                    ''
+                    + old.prePatch;
                 });
             }
             # fill in the missing pc file
@@ -274,10 +282,11 @@
               override =
                 pkg:
                 pkg.overrideAttrs (old: {
-                  postInstall = ''
-                    ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
-                  ''
-                  + old.postInstall;
+                  postInstall =
+                    ''
+                      ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
+                    ''
+                    + old.postInstall;
                 });
             }
             {
@@ -287,6 +296,11 @@
             {
               condition = version: versionInBetween version "3.12" "3.11";
               override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
+            }
+            {
+              # Merged upstream in CPython 3.14.5: https://github.com/python/cpython/pull/146265
+              condition = version: versionInBetween version "3.15" "3.14.5";
+              override = filterOutPatch "hacl-static-ldeps-for-static-modules.patch";
             }
           ];
           callPackage = pkgs.newScope {
@@ -308,7 +322,9 @@
                   inherit sourceVersion;
                   hash = "sha256-${hash}";
                   self = packages.${version};
-                  passthruFun = callPackage "${toString pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix" { };
+                  passthruFun =
+                    callPackage "${toString pkgs.path}/pkgs/development/interpreters/python/passthrufun.nix"
+                      { };
                 }
                 // lib.optionalAttrs (sourceVersion.major == "3") {
                   noldconfigPatch = ./patches + "/${sourceVersion.major}.${sourceVersion.minor}-no-ldconfig.patch";
