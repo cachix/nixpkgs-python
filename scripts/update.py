@@ -92,7 +92,7 @@ def get_activestate_releases(response, versions, session):
         cycle = ".".join(version.split(".")[:2])
         release = versions["releases"].get(version, {})
 
-        if cycle != "2.7":
+        if cycle != "2.7" or entry["prerelease"]:
             continue
 
         versions["latest"][cycle] = max(
