@@ -797,7 +797,7 @@
             "url": "https://www.python.org/ftp/python/3.14.5/Python-3.14.5.tgz"
         },
         "2.7.18.14": {
-            "hash": "2IwhXClKwYZsduN1Cshrm2SNLrUa26FBC41tQqIVuqM=",
+            "hash": "AvzZuzg1RMdHBsjakezggY1+p2c90wUpJP/nxzjD+Rw=",
             "url": "https://github.com/ActiveState/cpython/archive/refs/tags/2.7.18.14.tar.gz"
         }
     },
