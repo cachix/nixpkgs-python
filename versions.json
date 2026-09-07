@@ -807,12 +807,32 @@
         "3.13.14": {
             "hash": "WuU1o2rw68pvyhduy4GX9ducHLjI8M0SzfF4cEbbH0E=",
             "url": "https://www.python.org/ftp/python/3.13.14/Python-3.13.14.tgz"
+        },
+        "3.14.7": {
+            "hash": "YoWYBfb98l4ry/P6MheAHhmWiHyjPmoq+AZ0vfotvgc=",
+            "url": "https://www.python.org/ftp/python/3.14.7/Python-3.14.7.tgz"
+        },
+        "3.13.15": {
+            "hash": "wo2dITwJtbWrLCmBKVDhL3RpmeCZuCiUIxvpVLJrrtk=",
+            "url": "https://www.python.org/ftp/python/3.13.15/Python-3.13.15.tgz"
+        },
+        "3.12.14": {
+            "hash": "bG35CNLD/STm12hp6SVCq9DzOuyd/BjfiHX4lmAobUM=",
+            "url": "https://www.python.org/ftp/python/3.12.14/Python-3.12.14.tgz"
+        },
+        "3.11.16": {
+            "hash": "bAvXarDsfZTtQAsUl/Aaxsd1HIgiYV7ghVo+stiT6nY=",
+            "url": "https://www.python.org/ftp/python/3.11.16/Python-3.11.16.tgz"
+        },
+        "3.10.21": {
+            "hash": "8naYfwYnCubB+02mIL0QXt94wxNowvfoXmwdUcVgsEs=",
+            "url": "https://www.python.org/ftp/python/3.10.21/Python-3.10.21.tgz"
         }
     },
     "latest": {
-        "3.12": "3.12.13",
-        "3.11": "3.11.15",
-        "3.10": "3.10.20",
+        "3.12": "3.12.14",
+        "3.11": "3.11.16",
+        "3.10": "3.10.21",
         "3.9": "3.9.25",
         "3.8": "3.8.20",
         "3.7": "3.7.17",
@@ -820,8 +840,8 @@
         "3.5": "3.5.10",
         "3.4": "3.4.10",
         "3.3": "3.3.7",
-        "2.7": "2.7.18",
-        "3.13": "3.13.14",
-        "3.14": "3.14.6"
+        "2.7": "2.7.18.14",
+        "3.13": "3.13.15",
+        "3.14": "3.14.7"
     }
 }
