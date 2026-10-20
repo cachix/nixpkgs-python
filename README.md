@@ -48,7 +48,6 @@ To push your own builds to the cache (useful in CI or team setups), [create a Ca
 
 Supported platforms:
 
-- x86_64-darwin
 - x86_64-linux
 - aarch64-linux
 - aarch64-darwin
