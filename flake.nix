@@ -268,11 +268,10 @@
               override =
                 pkg:
                 pkg.overrideAttrs (old: {
-                  prePatch =
-                    ''
-                      substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
-                    ''
-                    + old.prePatch;
+                  prePatch = ''
+                    substituteInPlace Lib/subprocess.py --replace-fail '"/bin/sh"' "'/bin/sh'"
+                  ''
+                  + old.prePatch;
                 });
             }
             # fill in the missing pc file
@@ -281,11 +280,10 @@
               override =
                 pkg:
                 pkg.overrideAttrs (old: {
-                  postInstall =
-                    ''
-                      ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
-                    ''
-                    + old.postInstall;
+                  postInstall = ''
+                    ln -s "$out/lib/pkgconfig/python-${pkg.passthru.sourceVersion.major}.${pkg.passthru.sourceVersion.minor}.pc" "$out/lib/pkgconfig/python3.pc"
+                  ''
+                  + old.postInstall;
                 });
             }
             {
