@@ -883,6 +883,10 @@
         "3.11.18": {
             "hash": "X2JxGxJHD9Q1+D8UUcGx70oXmuvHFccWh0sJZ1Z9gU4=",
             "url": "https://www.python.org/ftp/python/3.11.18/Python-3.11.18.tgz"
+        },
+        "2.7.18.15": {
+            "hash": "kvyT+cfq44GBTIb7HKzHBu6nSdUTdeBRtg69v78yfVU=",
+            "url": "https://github.com/ActiveState/cpython/archive/refs/tags/2.7.18.15.tar.gz"
         }
     },
     "latest": {
@@ -896,7 +900,7 @@
         "3.5": "3.5.10",
         "3.4": "3.4.10",
         "3.3": "3.3.7",
-        "2.7": "2.7.18.14",
+        "2.7": "2.7.18.15",
         "3.13": "3.13.18",
         "3.14": "3.14.10",
         "3.15": "3.15.2"
