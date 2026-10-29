@@ -295,6 +295,11 @@
               override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
             }
             {
+              # CPython 3.14.9 moved knownfiles into a non-Windows branch.
+              condition = version: versionInBetween version "3.15" "3.14.9";
+              override = replacePatch "mimetypes.patch" ./patches/3.14.9-mimetypes.patch;
+            }
+            {
               # Merged upstream in CPython 3.14.5: https://github.com/python/cpython/pull/146265
               condition = version: versionInBetween version "3.15" "3.14.5";
               override = filterOutPatch "hacl-static-ldeps-for-static-modules.patch";
