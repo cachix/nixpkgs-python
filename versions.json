@@ -891,6 +891,10 @@
         "2.7.18.16": {
             "hash": "XfzB0ewowxQHgNd+YtaPX9WAeMAX1BSl4VH8J5Ph6uc=",
             "url": "https://github.com/ActiveState/cpython/archive/refs/tags/2.7.18.16.tar.gz"
+        },
+        "2.7.18.17": {
+            "hash": "OqzN++HWUqft74UwPVF0OnDY3xvJwSXDrmUngBgDpw0=",
+            "url": "https://github.com/ActiveState/cpython/archive/refs/tags/2.7.18.17.tar.gz"
         }
     },
     "latest": {
@@ -904,7 +908,7 @@
         "3.5": "3.5.10",
         "3.4": "3.4.10",
         "3.3": "3.3.7",
-        "2.7": "2.7.18.16",
+        "2.7": "2.7.18.17",
         "3.13": "3.13.18",
         "3.14": "3.14.10",
         "3.15": "3.15.2"
