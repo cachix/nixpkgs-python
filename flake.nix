@@ -301,7 +301,8 @@
                 versionInBetween version "3.12" "3.11.18"
                 || versionInBetween version "3.13" "3.12.16"
                 || versionInBetween version "3.14" "3.13.18"
-                || versionInBetween version "3.15" "3.14.9";
+                || versionInBetween version "3.15" "3.14.9"
+                || versionInBetween version "3.16" "3.15.1";
               override = replacePatch "mimetypes.patch" ./patches/3.14.9-mimetypes.patch;
             }
             {
