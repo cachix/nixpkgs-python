@@ -295,8 +295,13 @@
               override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
             }
             {
-              # CPython 3.14.9 moved knownfiles into a non-Windows branch.
-              condition = version: versionInBetween version "3.15" "3.14.9";
+              # CPython moved knownfiles into a non-Windows branch in these maintenance releases.
+              condition =
+                version:
+                versionInBetween version "3.12" "3.11.18"
+                || versionInBetween version "3.13" "3.12.16"
+                || versionInBetween version "3.14" "3.13.18"
+                || versionInBetween version "3.15" "3.14.9";
               override = replacePatch "mimetypes.patch" ./patches/3.14.9-mimetypes.patch;
             }
             {
