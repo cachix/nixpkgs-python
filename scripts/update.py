@@ -5,7 +5,18 @@ import json
 import base64
 import hashlib
 import os
+import sys
+from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+
+
+EXCLUDED_RELEASES = {
+    SpecifierSet("<2.7"): "Python 2 series before 2.7 are unsupported",
+    SpecifierSet(">=2.7,<2.7.6"): "Unsupported OpenSSL and missing distutils patch",
+    SpecifierSet(">=3,<3.3"): "Python 3 series before 3.3 are unsupported",
+    SpecifierSet("==3.3.0"): "Patches fail to apply",
+    SpecifierSet("==3.9.0"): "Patches fail to apply",
+}
 
 
 def create_session_with_retries():
@@ -23,7 +34,11 @@ def create_session_with_retries():
 
 
 def source(version):
-    return f"https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
+    # Before 3.3, Python.org omitted the patch zero from initial release archives.
+    archive_version = version
+    if version.endswith(".0") and Version(version) < Version("3.3"):
+        archive_version = version.removesuffix(".0")
+    return f"https://www.python.org/ftp/python/{archive_version}/Python-{archive_version}.tgz"
 
 
 def activestate_source(tag):
@@ -43,6 +58,28 @@ def get_versions():
         return d
 
 
+def add_release(versions, cycle, version, url, session):
+    release_version = Version(version)
+    if any(release_version in specifier for specifier in EXCLUDED_RELEASES):
+        return
+
+    if not versions["releases"].get(version, {}).get("hash"):
+        print(f"Downloading {url}")
+        response = session.get(url)
+        if response.status_code == 404:
+            print(f"Skipping Python {version} (HTTP 404 at {url})", file=sys.stderr)
+            return
+        response.raise_for_status()
+        versions["releases"][version] = {
+            "hash": calculate_sha256(response.content),
+            "url": url,
+        }
+
+    versions["latest"][cycle] = max(
+        version, versions["latest"].get(cycle, version), key=Version
+    )
+
+
 def get_all_releases(response, versions, session):
     for entry in response.json():
         cycle = entry["cycle"]
@@ -50,38 +87,9 @@ def get_all_releases(response, versions, session):
         latest_version_split = latest_version.split(".")
         latest_patch = int(latest_version_split[-1])
 
-        if cycle in ["2.6", "3.0", "3.1", "3.2"]:
-            continue
-
-        versions["latest"][cycle] = latest_version
-
         for i in range(0, latest_patch + 1):
             version = f"{cycle}.{i}"
-            # unsupported openssl version & no distutils patch
-            if version in [
-                "2.7.0",
-                "2.7.1",
-                "2.7.2",
-                "2.7.3",
-                "2.7.4",
-                "2.7.5",
-                # patches fail:
-                "3.3.0",
-                "3.9.0",
-            ]:
-                continue
-            release = versions["releases"].get(version, {})
-            if release.get("hash"):
-                continue
-            else:
-                url = source(version)
-                print(f"Downloading {url}")
-                response = session.get(url)
-                response.raise_for_status()
-                versions["releases"][version] = {
-                    "hash": calculate_sha256(response.content),
-                    "url": url,
-                }
+            add_release(versions, cycle, version, source(version), session)
     return versions
 
 
@@ -90,26 +98,11 @@ def get_activestate_releases(response, versions, session):
         tag = entry["tag_name"]
         version = tag.lstrip("v")
         cycle = ".".join(version.split(".")[:2])
-        release = versions["releases"].get(version, {})
 
         if cycle != "2.7" or entry["prerelease"]:
             continue
 
-        versions["latest"][cycle] = max(
-            version, versions["latest"].get(cycle, version), key=Version
-        )
-
-        if release.get("hash"):
-            continue
-        else:
-            url = activestate_source(tag)
-            print(f"Downloading {url}")
-            response = session.get(url)
-            response.raise_for_status()
-            versions["releases"][version] = {
-                "hash": calculate_sha256(response.content),
-                "url": url,
-            }
+        add_release(versions, cycle, version, activestate_source(tag), session)
     return versions
 
 
@@ -123,6 +116,7 @@ if __name__ == "__main__":
 
     # TODO: pypy: https://downloads.python.org/pypy/versions.json
     response = session.get("https://endoflife.date/api/python.json")
+    response.raise_for_status()
 
     versions = get_all_releases(response, versions, session)
 
