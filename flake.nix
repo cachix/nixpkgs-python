@@ -295,6 +295,19 @@
               override = filterOutPatch "f4b31edf2d9d72878dab1f66a36913b5bcc848ec.patch";
             }
             {
+              # Older releases define knownfiles at module level. Nixpkgs' current
+              # mimetypes.patch targets the non-Windows branch, which only exists
+              # in these maintenance releases and newer.
+              condition =
+                version:
+                versionInBetween version "3.11.18" "3.0"
+                || versionInBetween version "3.12.16" "3.12"
+                || versionInBetween version "3.13.18" "3.13"
+                || versionInBetween version "3.14.9" "3.14"
+                || versionInBetween version "3.15.1" "3.15";
+              override = replacePatch "mimetypes.patch" ./patches/3.11.17-mimetypes.patch;
+            }
+            {
               # CPython moved knownfiles into a non-Windows branch in these maintenance releases.
               condition =
                 version:
